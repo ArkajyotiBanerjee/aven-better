@@ -1,0 +1,33 @@
+# Python
+backend/.venv/
+.venv/
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environment & Secrets
+.env
+.env.*
+!.env.example
+
+# Frontend
+frontend/node_modules/
+node_modules/
+frontend/dist/
+dist/
+
+# Generated Runtime Data
+backend/data/uploads/
+backend/data/transcripts/
+
+# Local Media / Test Video
+backend/lecture1.mp4
+*.mp4
+*.webm
+*.mov
+
+# IDE / System
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
