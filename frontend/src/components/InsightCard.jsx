@@ -1,5 +1,33 @@
 import React from 'react';
+import { 
+  BookOpen, 
+  Binary, 
+  Lightbulb, 
+  AlertTriangle, 
+  Link2, 
+  Clock, 
+  Quote, 
+  ArrowRight 
+} from 'lucide-react';
 import { formatTime } from './CaptionPanel';
+
+function getCategoryIcon(type) {
+  switch (type) {
+    case 'concept':
+    case 'definition':
+      return <BookOpen size={14} aria-hidden="true" />;
+    case 'formula':
+      return <Binary size={14} aria-hidden="true" />;
+    case 'example':
+      return <Lightbulb size={14} aria-hidden="true" />;
+    case 'important_point':
+      return <AlertTriangle size={14} aria-hidden="true" />;
+    case 'relationship':
+      return <Link2 size={14} aria-hidden="true" />;
+    default:
+      return <BookOpen size={14} aria-hidden="true" />;
+  }
+}
 
 export default function InsightCard({
   insight,
@@ -10,7 +38,6 @@ export default function InsightCard({
     id,
     type,
     categoryLabel,
-    icon,
     title,
     timestamp_start,
     timestamp_end,
@@ -35,13 +62,16 @@ export default function InsightCard({
     >
       <div className="insight-card-header">
         <span className={`category-tag category-${type}`}>
-          <span className="category-icon" aria-hidden="true">{icon}</span>
+          <span className="category-icon" aria-hidden="true">
+            {getCategoryIcon(type)}
+          </span>
           <span className="category-name">{categoryLabel}</span>
         </span>
         
         {timestamp_start !== undefined && (
           <span className="insight-timestamp" title="Jump to timestamp in captions">
-            <span aria-hidden="true">⏱</span> {formatTime(timestamp_start)}
+            <Clock size={12} className="clock-svg-inline" aria-hidden="true" />
+            <span>{formatTime(timestamp_start)}</span>
             {timestamp_end && timestamp_end !== timestamp_start ? ` – ${formatTime(timestamp_end)}` : ''}
           </span>
         )}
@@ -110,7 +140,7 @@ export default function InsightCard({
               <span className="relation-node source-node">{data.source}</span>
               <span className="relation-arrow">
                 <span className="relation-type">{data.relationship}</span>
-                <span className="arrow-symbol" aria-hidden="true">➔</span>
+                <ArrowRight size={14} className="arrow-symbol" aria-hidden="true" />
               </span>
               <span className="relation-node target-node">{data.target}</span>
             </div>
@@ -120,7 +150,7 @@ export default function InsightCard({
         {/* Evidence Quote */}
         {evidence && (
           <div className="insight-evidence" title="Direct ground from transcript">
-            <span className="evidence-icon" aria-hidden="true">❝</span>
+            <Quote size={14} className="evidence-icon-svg" aria-hidden="true" />
             <blockquote className="evidence-quote">{evidence}</blockquote>
           </div>
         )}

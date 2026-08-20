@@ -1,4 +1,17 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { 
+  Play, 
+  Pause, 
+  Square, 
+  SkipBack, 
+  SkipForward, 
+  Volume2, 
+  MessageSquare, 
+  Send, 
+  HelpCircle, 
+  Headphones,
+  Sparkles
+} from 'lucide-react';
 
 const API_BASE_URL = 'http://localhost:8000';
 
@@ -47,7 +60,6 @@ function buildAudioSections(lectureData) {
   // 3. Formulas
   if (lectureData.formulas && lectureData.formulas.length > 0) {
     const formulaTexts = lectureData.formulas.map(f => {
-      // Natural speech transformation for formulas like F = ma
       let spokenEq = f.equation || '';
       spokenEq = spokenEq
         .replace(/F\s*=\s*m\s*a/gi, "Force equals mass multiplied by acceleration")
@@ -273,7 +285,15 @@ export default function BlindModePanel({
       setQuestionInput('');
     } catch (e) {
       console.error(e);
-      alert(e.message || "Error submitting question.");
+      const errorItem = {
+        id: `qa-err-${Date.now()}`,
+        question: q,
+        answer: e.message || 'Could not get an answer right now. Please try again.',
+        sources: [],
+        isError: true
+      };
+      setQaHistory(prev => [errorItem, ...prev]);
+      setQuestionInput('');
     } finally {
       setIsAsking(false);
     }
@@ -301,7 +321,10 @@ export default function BlindModePanel({
         <section className="audio-player-column" aria-labelledby="player-heading">
           <div className="audio-player-card">
             <div className="player-header">
-              <span className="mode-pill-audio" aria-hidden="true">🎧 AUDIO-FIRST LESSON</span>
+              <div className="mode-pill-audio">
+                <Headphones size={14} aria-hidden="true" />
+                <span>AUDIO-FIRST LESSON</span>
+              </div>
               <span 
                 className="section-counter" 
                 aria-live="polite"
@@ -328,7 +351,8 @@ export default function BlindModePanel({
                 disabled={currentSectionIndex === 0}
                 aria-label="Previous section"
               >
-                ⏮ Prev
+                <SkipBack size={16} aria-hidden="true" />
+                <span>Prev</span>
               </button>
 
               {!isPlaying ? (
@@ -338,7 +362,8 @@ export default function BlindModePanel({
                   onClick={handlePlayFullLesson}
                   aria-label={isPaused ? "Resume audio lesson" : "Play entire audio lesson"}
                 >
-                  ▶ {isPaused ? "Resume Lesson" : "Play Lesson"}
+                  <Play size={18} aria-hidden="true" fill="currentColor" />
+                  <span>{isPaused ? "Resume Lesson" : "Play Lesson"}</span>
                 </button>
               ) : (
                 <button
@@ -347,7 +372,8 @@ export default function BlindModePanel({
                   onClick={handlePause}
                   aria-label="Pause audio lesson"
                 >
-                  ⏸ Pause
+                  <Pause size={18} aria-hidden="true" fill="currentColor" />
+                  <span>Pause</span>
                 </button>
               )}
 
@@ -358,7 +384,8 @@ export default function BlindModePanel({
                 disabled={!isPlaying && !isPaused}
                 aria-label="Stop audio"
               >
-                ■ Stop
+                <Square size={16} aria-hidden="true" fill="currentColor" />
+                <span>Stop</span>
               </button>
 
               <button
@@ -368,7 +395,8 @@ export default function BlindModePanel({
                 disabled={currentSectionIndex === audioSections.length - 1}
                 aria-label="Next section"
               >
-                Next ⏭
+                <span>Next</span>
+                <SkipForward size={16} aria-hidden="true" />
               </button>
             </div>
 
@@ -389,7 +417,9 @@ export default function BlindModePanel({
                       >
                         <span className="toc-num">{idx + 1}.</span>
                         <span className="toc-title">{sec.title}</span>
-                        {isCurrent && isPlaying && <span className="playing-dot" aria-hidden="true">🔊</span>}
+                        {isCurrent && isPlaying && (
+                          <Volume2 size={16} className="playing-icon-svg" aria-hidden="true" />
+                        )}
                       </button>
                     </li>
                   );
@@ -403,9 +433,12 @@ export default function BlindModePanel({
         <section className="audio-qa-column" aria-labelledby="qa-heading">
           <div className="audio-qa-card">
             <div className="qa-header-group">
-              <h2 id="qa-heading" className="qa-main-title">
-                🎙️ Ask About This Lecture
-              </h2>
+              <div className="qa-title-row">
+                <MessageSquare size={22} className="qa-title-icon" aria-hidden="true" />
+                <h2 id="qa-heading" className="qa-main-title">
+                  Ask About This Lecture
+                </h2>
+              </div>
               <p className="qa-subtitle">
                 Ask any question grounded strictly in the lecture concepts, formulas, and examples.
               </p>
@@ -424,7 +457,8 @@ export default function BlindModePanel({
                     disabled={isAsking}
                     aria-label={`Ask preset question: ${pq}`}
                   >
-                    💬 {pq}
+                    <HelpCircle size={14} aria-hidden="true" />
+                    <span>{pq}</span>
                   </button>
                 ))}
               </div>
@@ -457,7 +491,12 @@ export default function BlindModePanel({
                 disabled={!questionInput.trim() || isAsking}
                 aria-label="Submit question to lecture assistant"
               >
-                {isAsking ? 'Thinking...' : 'Ask ➔'}
+                {isAsking ? 'Thinking...' : (
+                  <>
+                    <span>Ask</span>
+                    <Send size={15} aria-hidden="true" />
+                  </>
+                )}
               </button>
             </form>
 
@@ -476,7 +515,7 @@ export default function BlindModePanel({
                 qaHistory.map((item) => {
                   const isPlayingThis = activeAnswerPlayingId === item.id;
                   return (
-                    <article key={item.id} className="qa-item-card" aria-label={`Question: ${item.question}`}>
+                    <article key={item.id} className={`qa-item-card ${item.isError ? 'qa-item-error' : ''}`} aria-label={`Question: ${item.question}`}>
                       <div className="qa-question-bar">
                         <span className="qa-q-badge" aria-hidden="true">Q:</span>
                         <h3 className="qa-question-text">{item.question}</h3>
@@ -493,7 +532,17 @@ export default function BlindModePanel({
                           onClick={() => handleSpeakAnswer(item)}
                           aria-label={isPlayingThis ? "Stop listening to answer" : "Listen to answer read aloud"}
                         >
-                          {isPlayingThis ? '■ Stop Listening' : '▶ Listen to Answer'}
+                          {isPlayingThis ? (
+                            <>
+                              <Square size={14} aria-hidden="true" fill="currentColor" />
+                              <span>Stop Listening</span>
+                            </>
+                          ) : (
+                            <>
+                              <Volume2 size={15} aria-hidden="true" />
+                              <span>Listen to Answer</span>
+                            </>
+                          )}
                         </button>
 
                         {item.sources && item.sources.length > 0 && (

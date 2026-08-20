@@ -1,4 +1,12 @@
 import React, { useState } from 'react';
+import { 
+  Sparkles, 
+  BookOpen, 
+  Binary, 
+  Lightbulb, 
+  AlertTriangle, 
+  Link2 
+} from 'lucide-react';
 import InsightCard from './InsightCard';
 
 export default function InsightPanel({
@@ -28,7 +36,7 @@ export default function InsightPanel({
     <section className="insight-panel" aria-labelledby="insights-heading">
       <div className="panel-header">
         <div className="panel-title-wrap">
-          <span className="panel-icon" aria-hidden="true">💡</span>
+          <Sparkles size={18} className="panel-icon-svg text-accent" aria-hidden="true" />
           <h2 id="insights-heading">AI Learning Insights</h2>
         </div>
         <span className="insight-count-badge" aria-label={`${insights.length} total educational events extracted`}>
@@ -53,7 +61,9 @@ export default function InsightPanel({
             className={`tab-btn ${filter === 'concept' ? 'active' : ''}`}
             onClick={() => setFilter('concept')}
           >
-            <span aria-hidden="true">🆕</span> Concepts <span className="tab-count">{counts.concept}</span>
+            <BookOpen size={14} aria-hidden="true" />
+            <span>Concepts</span>
+            <span className="tab-count">{counts.concept}</span>
           </button>
         )}
         {counts.formula > 0 && (
@@ -63,7 +73,9 @@ export default function InsightPanel({
             className={`tab-btn ${filter === 'formula' ? 'active' : ''}`}
             onClick={() => setFilter('formula')}
           >
-            <span aria-hidden="true">🧮</span> Formulas <span className="tab-count">{counts.formula}</span>
+            <Binary size={14} aria-hidden="true" />
+            <span>Formulas</span>
+            <span className="tab-count">{counts.formula}</span>
           </button>
         )}
         {counts.example > 0 && (
@@ -73,7 +85,9 @@ export default function InsightPanel({
             className={`tab-btn ${filter === 'example' ? 'active' : ''}`}
             onClick={() => setFilter('example')}
           >
-            <span aria-hidden="true">💡</span> Examples <span className="tab-count">{counts.example}</span>
+            <Lightbulb size={14} aria-hidden="true" />
+            <span>Examples</span>
+            <span className="tab-count">{counts.example}</span>
           </button>
         )}
         {counts.important_point > 0 && (
@@ -83,7 +97,9 @@ export default function InsightPanel({
             className={`tab-btn ${filter === 'important_point' ? 'active' : ''}`}
             onClick={() => setFilter('important_point')}
           >
-            <span aria-hidden="true">⚠️</span> Important <span className="tab-count">{counts.important_point}</span>
+            <AlertTriangle size={14} aria-hidden="true" />
+            <span>Important</span>
+            <span className="tab-count">{counts.important_point}</span>
           </button>
         )}
         {counts.relationship > 0 && (
@@ -93,7 +109,9 @@ export default function InsightPanel({
             className={`tab-btn ${filter === 'relationship' ? 'active' : ''}`}
             onClick={() => setFilter('relationship')}
           >
-            <span aria-hidden="true">🔗</span> Relations <span className="tab-count">{counts.relationship}</span>
+            <Link2 size={14} aria-hidden="true" />
+            <span>Relations</span>
+            <span className="tab-count">{counts.relationship}</span>
           </button>
         )}
       </nav>

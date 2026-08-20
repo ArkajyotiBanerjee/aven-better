@@ -1,4 +1,5 @@
 import React from 'react';
+import { ArrowRight, Sparkles } from 'lucide-react';
 
 const OPTION_LABELS = ['A', 'B', 'C', 'D'];
 
@@ -44,41 +45,44 @@ export default function QuizQuestion({
         </div>
       </div>
 
-      {/* Question Text */}
-      <h2 id="question-text" className="quiz-question-prompt">
-        {question.question}
-      </h2>
+      {/* Transitioning Question Content */}
+      <div key={`quiz-q-${currentIndex}`} className="quiz-body-anim">
+        {/* Question Text */}
+        <h2 id="question-text" className="quiz-question-prompt">
+          {question.question}
+        </h2>
 
-      {/* Options List */}
-      <div 
-        className="quiz-options-grid" 
-        role="radiogroup" 
-        aria-labelledby="question-text"
-      >
-        {question.options.map((opt, idx) => {
-          const isSelected = selectedAnswer === opt;
-          const letter = OPTION_LABELS[idx] || `${idx + 1}`;
+        {/* Options List */}
+        <div 
+          className="quiz-options-grid" 
+          role="radiogroup" 
+          aria-labelledby="question-text"
+        >
+          {question.options.map((opt, idx) => {
+            const isSelected = selectedAnswer === opt;
+            const letter = OPTION_LABELS[idx] || `${idx + 1}`;
 
-          return (
-            <div
-              key={idx}
-              className={`quiz-option-card ${isSelected ? 'selected' : ''}`}
-              onClick={() => onSelectOption(opt)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault();
-                  onSelectOption(opt);
-                }
-              }}
-              role="radio"
-              aria-checked={isSelected}
-              tabIndex="0"
-            >
-              <span className="option-letter-badge">{letter}</span>
-              <span className="option-text">{opt}</span>
-            </div>
-          );
-        })}
+            return (
+              <div
+                key={idx}
+                className={`quiz-option-card ${isSelected ? 'selected' : ''}`}
+                onClick={() => onSelectOption(opt)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    onSelectOption(opt);
+                  }
+                }}
+                role="radio"
+                aria-checked={isSelected}
+                tabIndex="0"
+              >
+                <span className="option-letter-badge">{letter}</span>
+                <span className="option-text">{opt}</span>
+              </div>
+            );
+          })}
+        </div>
       </div>
 
       {/* Footer Navigation */}
@@ -94,7 +98,9 @@ export default function QuizQuestion({
             onClick={onSubmit}
             disabled={!hasSelected || isSubmitting}
           >
-            {isSubmitting ? 'Evaluating Answers...' : 'Submit Assessment ➔'}
+            <Sparkles size={16} aria-hidden="true" />
+            <span>{isSubmitting ? 'Evaluating Answers...' : 'Submit Assessment'}</span>
+            <ArrowRight size={16} aria-hidden="true" />
           </button>
         ) : (
           <button
@@ -103,7 +109,8 @@ export default function QuizQuestion({
             onClick={onNext}
             disabled={!hasSelected}
           >
-            Next Question ➔
+            <span>Next Question</span>
+            <ArrowRight size={16} aria-hidden="true" />
           </button>
         )}
       </div>

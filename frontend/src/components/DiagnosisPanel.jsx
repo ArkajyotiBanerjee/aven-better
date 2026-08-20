@@ -1,4 +1,18 @@
 import React, { useState, useEffect } from 'react';
+import { 
+  CheckCircle2, 
+  AlertTriangle, 
+  Target, 
+  Lightbulb, 
+  ArrowLeft, 
+  ArrowRight, 
+  RotateCcw, 
+  Trophy, 
+  Brain, 
+  Video, 
+  Loader2,
+  Sparkles
+} from 'lucide-react';
 
 const API_BASE_URL = 'http://localhost:8000';
 const OPTION_LABELS = ['A', 'B', 'C', 'D'];
@@ -79,7 +93,11 @@ export default function DiagnosisPanel({
       setSubmissionFeedback(result);
     } catch (e) {
       console.error(e);
-      alert(e.message || 'Failed to check answer.');
+      setSubmissionFeedback({
+        is_correct: false,
+        feedback: e.message || 'Could not check your answer right now. Please try again.',
+        next_step: 'error'
+      });
     } finally {
       setIsChecking(false);
     }
@@ -105,7 +123,8 @@ export default function DiagnosisPanel({
             onClick={onReturnToQuiz}
             aria-label="Return to quiz results"
           >
-            ← Back to Quiz Results
+            <ArrowLeft size={16} aria-hidden="true" />
+            <span>Back to Quiz Results</span>
           </button>
           <button 
             type="button" 
@@ -113,7 +132,8 @@ export default function DiagnosisPanel({
             onClick={onReturnToLecture}
             aria-label="Return to full lecture experience"
           >
-            📹 Return to Lecture
+            <Video size={14} aria-hidden="true" />
+            <span>Return to Lecture</span>
           </button>
         </div>
 
@@ -122,14 +142,17 @@ export default function DiagnosisPanel({
           {filename && <span className="diag-filename">({filename})</span>}
         </div>
 
-        <span className="badge-adaptive">🧠 Adaptive Remediation</span>
+        <div className="badge-adaptive">
+          <Brain size={15} aria-hidden="true" />
+          <span>Adaptive Remediation</span>
+        </div>
       </div>
 
       {/* Main Body */}
       <div className="diagnosis-content-body">
         {status === 'loading' && (
           <div className="quiz-loading-state" role="status">
-            <div className="animated-spinner" aria-hidden="true" />
+            <Loader2 size={36} className="animated-spinner" aria-hidden="true" />
             <h2 className="loading-title">Analyzing Learning Patterns...</h2>
             <p className="loading-desc">
               Identifying strengths, specific areas to practice, and crafting your targeted mini-lesson.
@@ -139,7 +162,9 @@ export default function DiagnosisPanel({
 
         {status === 'error' && (
           <div className="quiz-error-state" role="alert">
-            <div className="error-icon" aria-hidden="true">⚠️</div>
+            <div className="error-icon" aria-hidden="true">
+              <AlertTriangle size={32} />
+            </div>
             <h2 className="error-title">Diagnosis Unavailable</h2>
             <p className="error-message">{errorMsg}</p>
             <button type="button" className="btn-primary" onClick={loadDiagnosis}>
@@ -161,12 +186,13 @@ export default function DiagnosisPanel({
                 {/* Strengths */}
                 <div className="snapshot-section">
                   <h3 className="section-title text-success">
-                    <span aria-hidden="true">✓</span> What You're Doing Well
+                    <CheckCircle2 size={18} aria-hidden="true" />
+                    <span>What You're Doing Well</span>
                   </h3>
                   <ul className="strengths-list">
                     {diagnosisData.strengths.map((str, idx) => (
                       <li key={idx} className="strength-item">
-                        <span className="bullet-check" aria-hidden="true">✔</span>
+                        <CheckCircle2 size={16} className="bullet-check" aria-hidden="true" />
                         <span>{str}</span>
                       </li>
                     ))}
@@ -176,7 +202,8 @@ export default function DiagnosisPanel({
                 {/* Learning Gaps / Areas to Practice */}
                 <div className="snapshot-section">
                   <h3 className="section-title text-warning">
-                    <span aria-hidden="true">⚠</span> Areas to Strengthen
+                    <AlertTriangle size={18} aria-hidden="true" />
+                    <span>Areas to Strengthen</span>
                   </h3>
 
                   {diagnosisData.learning_gaps.length === 0 ? (
@@ -216,7 +243,10 @@ export default function DiagnosisPanel({
               {diagnosisData.remediation ? (
                 <div className="diag-card remediation-card">
                   <div className="card-badge-header">
-                    <span className="card-tag tag-remediation">🎯 PERSONALIZED MINI-LESSON</span>
+                    <span className="card-tag tag-remediation">
+                      <Target size={14} className="tag-icon-inline" aria-hidden="true" />
+                      <span>PERSONALIZED MINI-LESSON</span>
+                    </span>
                     <span className="remediation-skill-tag">{diagnosisData.remediation.skill.toUpperCase()} PRACTICE</span>
                   </div>
 
@@ -227,7 +257,8 @@ export default function DiagnosisPanel({
                   {diagnosisData.remediation.example && (
                     <div className="worked-example-box">
                       <div className="example-header-tag">
-                        <span aria-hidden="true">💡</span> STEP-BY-STEP WORKED EXAMPLE
+                        <Lightbulb size={16} aria-hidden="true" />
+                        <span>STEP-BY-STEP WORKED EXAMPLE</span>
                       </div>
                       <div className="example-content">
                         {diagnosisData.remediation.example}
@@ -283,7 +314,8 @@ export default function DiagnosisPanel({
                             onClick={handleCheckRemediationAnswer}
                             disabled={!selectedOption || isChecking}
                           >
-                            {isChecking ? 'Checking...' : 'Check Answer ➔'}
+                            <Sparkles size={16} aria-hidden="true" />
+                            <span>{isChecking ? 'Checking...' : 'Check Answer ➔'}</span>
                           </button>
                         </div>
                       )}
@@ -293,7 +325,7 @@ export default function DiagnosisPanel({
                         <div className={`remediation-feedback-banner ${submissionFeedback.is_correct ? 'feedback-correct' : 'feedback-incorrect'}`}>
                           <div className="feedback-header">
                             <span className="feedback-icon" aria-hidden="true">
-                              {submissionFeedback.is_correct ? '🎉' : '💡'}
+                              {submissionFeedback.is_correct ? <CheckCircle2 size={20} /> : <Lightbulb size={20} />}
                             </span>
                             <strong>
                               {submissionFeedback.is_correct ? 'Mastery Confirmed!' : 'Keep Going!'}
@@ -308,7 +340,8 @@ export default function DiagnosisPanel({
                                 className="btn-primary btn-advance"
                                 onClick={handleAdvanceToHarder}
                               >
-                                Try a slightly harder problem ➔
+                                <span>Try a slightly harder problem</span>
+                                <ArrowRight size={16} aria-hidden="true" />
                               </button>
                             )}
 
@@ -318,7 +351,8 @@ export default function DiagnosisPanel({
                                 className="btn-primary"
                                 onClick={onReturnToLecture}
                               >
-                                ✓ Return to Lecture (Mastery Achieved)
+                                <CheckCircle2 size={16} aria-hidden="true" />
+                                <span>Return to Lecture (Mastery Achieved)</span>
                               </button>
                             )}
 
@@ -328,7 +362,8 @@ export default function DiagnosisPanel({
                                 className="btn-secondary"
                                 onClick={() => setSubmissionFeedback(null)}
                               >
-                                ⟲ Try Again
+                                <RotateCcw size={15} aria-hidden="true" />
+                                <span>Try Again</span>
                               </button>
                             )}
                           </div>
@@ -339,7 +374,9 @@ export default function DiagnosisPanel({
                 </div>
               ) : (
                 <div className="diag-card mastery-celebration-card">
-                  <div className="celebration-icon">🏆</div>
+                  <div className="celebration-icon" aria-hidden="true">
+                    <Trophy size={48} className="trophy-svg" />
+                  </div>
                   <h2 className="celebration-title">Complete Concept & Application Mastery</h2>
                   <p className="celebration-desc">
                     You answered all questions accurately and demonstrated strong problem-solving mastery across every skill domain in this lecture.

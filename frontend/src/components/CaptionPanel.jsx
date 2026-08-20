@@ -1,4 +1,5 @@
 import React, { useRef, useEffect } from 'react';
+import { MessageSquare, Clock } from 'lucide-react';
 
 export function formatTime(seconds) {
   if (seconds === undefined || seconds === null || isNaN(seconds)) return '00:00';
@@ -37,7 +38,7 @@ export default function CaptionPanel({
     <section className="caption-panel" aria-labelledby="captions-heading">
       <div className="panel-header">
         <div className="panel-title-wrap">
-          <span className="panel-icon" aria-hidden="true">💬</span>
+          <MessageSquare size={18} className="panel-icon-svg" aria-hidden="true" />
           <h2 id="captions-heading">Live-Style Captions</h2>
         </div>
         <span className="segment-count-badge" aria-label={`${segments.length} transcript segments`}>
@@ -74,14 +75,14 @@ export default function CaptionPanel({
             >
               <div className="caption-meta">
                 <span className="caption-timestamp">
-                  <span className="clock-icon" aria-hidden="true">⏱</span>
-                  {formatTime(seg.start)} – {formatTime(seg.end)}
+                  <Clock size={13} className="clock-icon-svg" aria-hidden="true" />
+                  <span>{formatTime(seg.start)} – {formatTime(seg.end)}</span>
                 </span>
                 {relatedInsights.length > 0 && (
                   <div className="caption-insight-pills" title={`${relatedInsights.length} educational insights anchor to this timestamp`}>
                     {relatedInsights.map((ins, iIdx) => (
                       <span key={iIdx} className={`insight-micro-pill pill-${ins.type}`}>
-                        {ins.icon} {ins.categoryLabel}
+                        {ins.categoryLabel}
                       </span>
                     ))}
                   </div>

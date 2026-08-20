@@ -1,4 +1,13 @@
 import React from 'react';
+import { 
+  Sparkles, 
+  ArrowRight, 
+  RotateCcw, 
+  ArrowLeft, 
+  CheckCircle2, 
+  XCircle,
+  Target
+} from 'lucide-react';
 
 export default function QuizResults({
   resultsData,
@@ -30,29 +39,45 @@ export default function QuizResults({
           You scored <strong>{percentage}%</strong> on this lecture-grounded assessment.
         </p>
 
-        <div className="results-actions">
-          {onViewDiagnosis && (
+        {/* Primary Climax CTA: View Diagnostic Learning Plan */}
+        {onViewDiagnosis && (
+          <div className="diagnosis-cta-container">
             <button
               type="button"
-              className="btn-primary btn-diagnosis-cta"
+              className="btn-diagnosis-primary-banner"
               onClick={onViewDiagnosis}
+              aria-label="See what I need to practice and view personalized learning plan"
             >
-              🔍 See What I Need to Practice ➔
+              <div className="cta-icon-glow" aria-hidden="true">
+                <Target size={26} />
+              </div>
+              <div className="cta-text-group">
+                <span className="cta-headline">See What I Need to Practice</span>
+                <span className="cta-subheadline">Turn your answers into a personalized mini-lesson & practice plan</span>
+              </div>
+              <div className="cta-arrow-badge" aria-hidden="true">
+                <ArrowRight size={20} />
+              </div>
             </button>
-          )}
+          </div>
+        )}
+
+        <div className="results-secondary-actions">
           <button 
             type="button" 
             className="btn-secondary" 
             onClick={onReturnToLecture}
           >
-            ← Return to Lecture Insights
+            <ArrowLeft size={16} aria-hidden="true" />
+            <span>Return to Lecture Insights</span>
           </button>
           <button 
             type="button" 
             className="btn-secondary" 
             onClick={onRetakeQuiz}
           >
-            ⟲ Retake Assessment
+            <RotateCcw size={16} aria-hidden="true" />
+            <span>Retake Assessment</span>
           </button>
         </div>
       </div>
@@ -71,7 +96,7 @@ export default function QuizResults({
                 <div className="review-card-header">
                   <div className="review-status-wrap">
                     <span className={`status-icon-badge ${item.is_correct ? 'icon-correct' : 'icon-incorrect'}`}>
-                      {item.is_correct ? '✓' : '✗'}
+                      {item.is_correct ? <CheckCircle2 size={16} /> : <XCircle size={16} />}
                     </span>
                     <span className="review-question-num">Question {idx + 1}</span>
                   </div>

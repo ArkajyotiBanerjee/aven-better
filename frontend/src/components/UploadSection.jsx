@@ -1,4 +1,17 @@
 import React, { useRef } from 'react';
+import { 
+  Sparkles, 
+  UploadCloud, 
+  Video, 
+  ArrowRight, 
+  FlaskConical, 
+  CheckCircle2, 
+  Loader2, 
+  AlertCircle,
+  Eye,
+  Headphones,
+  Brain
+} from 'lucide-react';
 
 export default function UploadSection({
   file,
@@ -15,13 +28,51 @@ export default function UploadSection({
     <section className="upload-section" aria-labelledby="upload-heading">
       <div className="upload-container">
         <div className="upload-hero">
-          <div className="hero-badge">AI For Accessible Education</div>
+          <div className="hero-badge">
+            <Sparkles size={14} className="hero-badge-icon" aria-hidden="true" />
+            <span>AI Multi-Modal Accessibility Platform</span>
+          </div>
+
           <h1 id="upload-heading" className="hero-title">
             Transform Any Lecture Into Accessible Understanding
           </h1>
+
           <p className="hero-subtitle">
-            Upload your lecture video to automatically generate synchronized captions, visual AI concept cards, key formulas, worked examples, and an interactive concept timeline for Deaf and Hard-of-Hearing learners.
+            Upload any lecture video to automatically generate personalized learning experiences tailored for Deaf, Blind, and Learning Support students.
           </p>
+
+          {/* 3 Core Accessibility Pathways */}
+          <div className="hero-pathways-grid" role="list" aria-label="Supported accessibility pathways">
+            <div className="pathway-item" role="listitem">
+              <div className="pathway-icon-wrap icon-deaf" aria-hidden="true">
+                <Eye size={18} />
+              </div>
+              <div className="pathway-text">
+                <strong>Visual Learning</strong>
+                <span>Captions, AI cards & timeline</span>
+              </div>
+            </div>
+
+            <div className="pathway-item" role="listitem">
+              <div className="pathway-icon-wrap icon-blind" aria-hidden="true">
+                <Headphones size={18} />
+              </div>
+              <div className="pathway-text">
+                <strong>Audio-First Lesson</strong>
+                <span>Spoken math & grounded Q&A</span>
+              </div>
+            </div>
+
+            <div className="pathway-item" role="listitem">
+              <div className="pathway-icon-wrap icon-support" aria-hidden="true">
+                <Brain size={18} />
+              </div>
+              <div className="pathway-text">
+                <strong>Learning Support</strong>
+                <span>Step-by-step & read aloud</span>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Upload Card */}
@@ -51,7 +102,9 @@ export default function UploadSection({
                   role="button"
                   aria-label="Upload lecture video file (MP4, WebM, MOV)"
                 >
-                  <div className="dropzone-icon" aria-hidden="true">📁</div>
+                  <div className="dropzone-icon-wrap" aria-hidden="true">
+                    <UploadCloud size={38} className="dropzone-icon" />
+                  </div>
                   <div className="dropzone-text">
                     <strong>Click to select lecture video</strong>
                     <span>Supports MP4, WebM, MOV</span>
@@ -60,7 +113,9 @@ export default function UploadSection({
               ) : (
                 <div className="selected-file-pane">
                   <div className="file-info-row">
-                    <span className="file-icon" aria-hidden="true">🎥</span>
+                    <span className="file-icon-wrap" aria-hidden="true">
+                      <Video size={24} />
+                    </span>
                     <div className="file-details">
                       <span className="file-name">{file.name}</span>
                       <span className="file-size">{(file.size / (1024 * 1024)).toFixed(2)} MB</span>
@@ -80,14 +135,15 @@ export default function UploadSection({
                     className="btn-primary btn-lg process-btn"
                     onClick={onProcessLecture}
                   >
-                    🚀 Process Lecture & Generate Insights
+                    <Sparkles size={18} aria-hidden="true" />
+                    <span>Process Lecture & Generate Understanding</span>
                   </button>
                 </div>
               )}
 
               {/* Demo Lecture Quick Load Option */}
               <div className="demo-divider">
-                <span>OR TRY WITH READY DEMO</span>
+                <span>OR EXPLORE INSTANTLY</span>
               </div>
 
               <div className="demo-action-box">
@@ -96,12 +152,14 @@ export default function UploadSection({
                   className="btn-demo"
                   onClick={onLoadDemo}
                 >
-                  <span className="demo-icon" aria-hidden="true">🔬</span>
+                  <span className="demo-icon-wrap" aria-hidden="true">
+                    <FlaskConical size={22} />
+                  </span>
                   <div className="demo-text">
                     <strong>Load Demo: Newton's Second Law Lecture</strong>
-                    <small>Instant extraction & visualization without waiting</small>
+                    <small>Pre-extracted multi-modal experience ready for demo</small>
                   </div>
-                  <span className="demo-arrow" aria-hidden="true">➔</span>
+                  <ArrowRight size={18} className="demo-arrow" aria-hidden="true" />
                 </button>
               </div>
             </>
@@ -111,7 +169,7 @@ export default function UploadSection({
           {(status === 'uploading' || status === 'transcribing' || status === 'extracting') && (
             <div className="processing-container" role="status" aria-live="polite">
               <div className="spinner-wrap">
-                <div className="animated-spinner" aria-hidden="true"></div>
+                <Loader2 size={36} className="animated-spinner" aria-hidden="true" />
               </div>
 
               <h2 className="processing-title">
@@ -129,16 +187,20 @@ export default function UploadSection({
               {/* Stepped progress indicators */}
               <div className="progress-steps">
                 <div className={`step-item ${status === 'uploading' ? 'current' : 'completed'}`}>
-                  <span className="step-num">1</span>
+                  <span className="step-num">
+                    {status !== 'uploading' ? <CheckCircle2 size={16} /> : '1'}
+                  </span>
                   <span className="step-label">Upload Video</span>
                 </div>
                 <div className={`step-item ${status === 'transcribing' ? 'current' : status === 'extracting' ? 'completed' : 'pending'}`}>
-                  <span className="step-num">2</span>
-                  <span className="step-label">Whisper Speech-to-Text</span>
+                  <span className="step-num">
+                    {status === 'extracting' ? <CheckCircle2 size={16} /> : '2'}
+                  </span>
+                  <span className="step-label">Whisper STT</span>
                 </div>
                 <div className={`step-item ${status === 'extracting' ? 'current' : 'pending'}`}>
                   <span className="step-num">3</span>
-                  <span className="step-label">AI Educational Extraction</span>
+                  <span className="step-label">AI Extraction</span>
                 </div>
               </div>
             </div>
@@ -147,7 +209,9 @@ export default function UploadSection({
           {/* Error State */}
           {status === 'error' && (
             <div className="error-container" role="alert">
-              <div className="error-icon" aria-hidden="true">⚠️</div>
+              <div className="error-icon" aria-hidden="true">
+                <AlertCircle size={32} />
+              </div>
               <h2 className="error-title">Processing Failed</h2>
               <p className="error-message">{errorMsg || 'An unexpected error occurred while processing the lecture.'}</p>
               <button 

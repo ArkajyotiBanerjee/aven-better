@@ -1,4 +1,16 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { 
+  Brain, 
+  Volume2, 
+  Square, 
+  ArrowLeft, 
+  ArrowRight, 
+  CheckSquare, 
+  Sparkles,
+  TrendingUp,
+  Scale,
+  Lightbulb
+} from 'lucide-react';
 
 /**
  * Builds step-by-step chunked learning cards from StructuredLecture.
@@ -11,8 +23,6 @@ function buildLearningSteps(lectureData) {
 
   // 1. Focus Concept
   const mainConcept = lectureData.concepts?.[0]?.name || title;
-  const conceptDesc = lectureData.concepts?.[0]?.description || 
-    (lectureData.definitions?.[0]?.definition || "Describes the physical relationship connecting force, mass, and acceleration.");
 
   steps.push({
     id: 'step-concept',
@@ -29,7 +39,10 @@ function buildLearningSteps(lectureData) {
         </div>
 
         <div className="key-idea-box">
-          <span className="idea-tag">💡 Key Idea</span>
+          <span className="idea-tag">
+            <Lightbulb size={16} className="inline-icon" aria-hidden="true" />
+            <span>Key Idea</span>
+          </span>
           <p className="idea-text">
             When you push or pull an object (force), it speeds up (accelerates). How fast it speeds up depends on how heavy it is (mass).
           </p>
@@ -176,7 +189,9 @@ function buildLearningSteps(lectureData) {
         <div className="support-step-body">
           <div className="rules-grid">
             <div className="rule-card rule-increase">
-              <div className="rule-icon">⬆️</div>
+              <div className="rule-icon-wrap" aria-hidden="true">
+                <TrendingUp size={24} />
+              </div>
               <div className="rule-info">
                 <strong>More Force = More Speed Change</strong>
                 <p>If you push twice as hard (double the force), the object accelerates twice as fast.</p>
@@ -184,7 +199,9 @@ function buildLearningSteps(lectureData) {
             </div>
 
             <div className="rule-card rule-decrease">
-              <div className="rule-icon">⚖️</div>
+              <div className="rule-icon-wrap" aria-hidden="true">
+                <Scale size={24} />
+              </div>
               <div className="rule-info">
                 <strong>More Mass = Less Acceleration</strong>
                 <p>A heavier object is harder to accelerate with the same push.</p>
@@ -205,7 +222,9 @@ function buildLearningSteps(lectureData) {
     subtitle: "You have reviewed all key concepts, the formula, and the worked example.",
     content: (
       <div className="support-step-body support-ready-box">
-        <div className="ready-icon-wrap">🌟</div>
+        <div className="ready-icon-wrap" aria-hidden="true">
+          <Sparkles size={42} className="sparkle-svg-ready" />
+        </div>
         <h3 className="ready-title">Great Progress!</h3>
         <p className="ready-desc">
           You have broken down <strong>{mainConcept}</strong> into simple, manageable steps. When you feel confident, check your understanding with a short practice assessment.
@@ -225,6 +244,7 @@ export default function LearningSupportPanel({
 }) {
   const steps = useMemo(() => buildLearningSteps(lectureData), [lectureData]);
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
+  const [direction, setDirection] = useState('forward'); // 'forward' | 'backward'
   const [isSpeaking, setIsSpeaking] = useState(false);
 
   // Stop speech when step changes or component unmounts
@@ -268,9 +288,11 @@ export default function LearningSupportPanel({
     window.speechSynthesis.speak(utterance);
   };
 
-  const handleGoToStep = (index) => {
+  const handleGoToStep = (index, forcedDirection = null) => {
     handleStopSpeech();
     if (index >= 0 && index < steps.length) {
+      const dir = forcedDirection || (index >= currentStepIndex ? 'forward' : 'backward');
+      setDirection(dir);
       setCurrentStepIndex(index);
     }
   };
@@ -284,7 +306,10 @@ export default function LearningSupportPanel({
         {/* Top Focus Header Bar */}
         <div className="support-top-bar">
           <div className="support-badge-group">
-            <span className="support-mode-pill">🧠 LEARNING SUPPORT</span>
+            <div className="support-mode-pill">
+              <Brain size={14} aria-hidden="true" />
+              <span>LEARNING SUPPORT</span>
+            </div>
             <span className="support-step-counter" aria-live="polite">
               Step {currentStepIndex + 1} of {steps.length}
             </span>
@@ -314,8 +339,12 @@ export default function LearningSupportPanel({
           ))}
         </nav>
 
-        {/* Main Focused Learning Card */}
-        <article className="support-card" aria-labelledby="step-title">
+        {/* Main Focused Learning Card with Directional Animation */}
+        <article 
+          key={`support-step-${currentStepIndex}`}
+          className={`support-card anim-slide-${direction}`} 
+          aria-labelledby="step-title"
+        >
           <div className="support-card-header">
             <span className="support-tag-pill">{activeStep.tag}</span>
             <h2 id="step-title" className="support-step-title">{activeStep.title}</h2>
@@ -336,7 +365,17 @@ export default function LearningSupportPanel({
               onClick={() => handleReadAloud(activeStep.spokenText)}
               aria-label={isSpeaking ? "Stop reading aloud" : "Read this step aloud"}
             >
-              {isSpeaking ? '■ Stop Reading' : '🔊 Read Aloud'}
+              {isSpeaking ? (
+                <>
+                  <Square size={14} aria-hidden="true" fill="currentColor" />
+                  <span>Stop Reading</span>
+                </>
+              ) : (
+                <>
+                  <Volume2 size={16} aria-hidden="true" />
+                  <span>Read Aloud</span>
+                </>
+              )}
             </button>
           </div>
         </article>
@@ -346,11 +385,12 @@ export default function LearningSupportPanel({
           <button
             type="button"
             className="btn-support-nav btn-support-prev"
-            onClick={() => handleGoToStep(currentStepIndex - 1)}
+            onClick={() => handleGoToStep(currentStepIndex - 1, 'backward')}
             disabled={currentStepIndex === 0}
             aria-label="Previous step"
           >
-            ← Previous Step
+            <ArrowLeft size={16} aria-hidden="true" />
+            <span>Previous Step</span>
           </button>
 
           {activeStep.isFinalStep ? (
@@ -360,16 +400,18 @@ export default function LearningSupportPanel({
               onClick={onOpenQuiz}
               aria-label="Open adaptive quiz to check understanding"
             >
-              📝 Test My Understanding ➔
+              <CheckSquare size={17} aria-hidden="true" />
+              <span>Test My Understanding ➔</span>
             </button>
           ) : (
             <button
               type="button"
               className="btn-primary btn-support-next"
-              onClick={() => handleGoToStep(currentStepIndex + 1)}
+              onClick={() => handleGoToStep(currentStepIndex + 1, 'forward')}
               aria-label="Next step"
             >
-              Next Step ➔
+              <span>Next Step</span>
+              <ArrowRight size={16} aria-hidden="true" />
             </button>
           )}
         </div>

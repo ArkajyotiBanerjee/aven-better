@@ -1,4 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { 
+  ArrowLeft, 
+  Target, 
+  Loader2, 
+  AlertTriangle 
+} from 'lucide-react';
 import QuizQuestion from './QuizQuestion';
 import QuizResults from './QuizResults';
 
@@ -114,7 +120,8 @@ export default function QuizPanel({
           onClick={onReturnToLecture}
           aria-label="Return to lecture mode"
         >
-          ← Return to Lecture
+          <ArrowLeft size={16} aria-hidden="true" />
+          <span>Return to Lecture</span>
         </button>
 
         <div className="quiz-lecture-info">
@@ -123,7 +130,10 @@ export default function QuizPanel({
         </div>
 
         <div className="quiz-badge-wrap">
-          <span className="badge-adaptive">🎯 Diagnostic Mode</span>
+          <div className="badge-adaptive">
+            <Target size={15} aria-hidden="true" />
+            <span>Diagnostic Mode</span>
+          </div>
         </div>
       </div>
 
@@ -131,7 +141,7 @@ export default function QuizPanel({
       <div className="quiz-content-body">
         {status === 'loading' && (
           <div className="quiz-loading-state" role="status">
-            <div className="animated-spinner" aria-hidden="true" />
+            <Loader2 size={36} className="animated-spinner" aria-hidden="true" />
             <h2 className="loading-title">Generating Lecture Assessment...</h2>
             <p className="loading-desc">
               Analyzing concepts, formulas, and examples to create a personalized diagnostic quiz.
@@ -141,7 +151,7 @@ export default function QuizPanel({
 
         {status === 'submitting' && (
           <div className="quiz-loading-state" role="status">
-            <div className="animated-spinner" aria-hidden="true" />
+            <Loader2 size={36} className="animated-spinner" aria-hidden="true" />
             <h2 className="loading-title">Evaluating Answers...</h2>
             <p className="loading-desc">Comparing your responses against grounded lecture principles.</p>
           </div>
@@ -171,7 +181,9 @@ export default function QuizPanel({
 
         {status === 'error' && (
           <div className="quiz-error-state" role="alert">
-            <div className="error-icon" aria-hidden="true">⚠️</div>
+            <div className="error-icon" aria-hidden="true">
+              <AlertTriangle size={32} />
+            </div>
             <h2 className="error-title">Assessment Error</h2>
             <p className="error-message">{errorMsg}</p>
             <div className="error-actions">
