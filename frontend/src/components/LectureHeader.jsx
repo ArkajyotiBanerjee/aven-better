@@ -42,16 +42,17 @@ export default function LectureHeader({
               <span className="tab-label">Blind / Visually-Impaired</span>
             </button>
 
-            <div 
-              className="mode-tab-btn mode-tab-disabled" 
-              role="tab" 
-              aria-disabled="true"
-              title="Dyslexia & cognitive learning support mode coming soon"
+            <button
+              type="button"
+              role="tab"
+              aria-selected={accessibilityMode === 'support'}
+              className={`mode-tab-btn ${accessibilityMode === 'support' ? 'active-mode' : ''}`}
+              onClick={() => onSelectMode && onSelectMode('support')}
+              aria-label="Switch to Learning Support simplified step-by-step learning mode"
             >
               <span className="tab-icon" aria-hidden="true">🧠</span>
               <span className="tab-label">Learning Support</span>
-              <span className="badge-coming-soon">Coming next</span>
-            </div>
+            </button>
           </div>
         </nav>
       </div>

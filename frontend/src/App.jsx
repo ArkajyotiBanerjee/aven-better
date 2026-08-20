@@ -7,6 +7,7 @@ import UploadSection from './components/UploadSection';
 import QuizPanel from './components/QuizPanel';
 import DiagnosisPanel from './components/DiagnosisPanel';
 import BlindModePanel from './components/BlindModePanel';
+import LearningSupportPanel from './components/LearningSupportPanel';
 import './App.css';
 
 const API_BASE_URL = 'http://localhost:8000';
@@ -18,7 +19,7 @@ function App() {
   const [errorMsg, setErrorMsg] = useState('');
   const [lectureData, setLectureData] = useState(null);
   const [viewMode, setViewMode] = useState('lecture'); // 'lecture' | 'quiz' | 'diagnosis'
-  const [accessibilityMode, setAccessibilityMode] = useState('deaf'); // 'deaf' | 'blind'
+  const [accessibilityMode, setAccessibilityMode] = useState('deaf'); // 'deaf' | 'blind' | 'support'
   const [evaluationResults, setEvaluationResults] = useState(null);
 
   // Active interaction states for bidirectional linking
@@ -282,6 +283,11 @@ function App() {
 
             {accessibilityMode === 'blind' ? (
               <BlindModePanel
+                lectureData={lectureData}
+                onOpenQuiz={() => setViewMode('quiz')}
+              />
+            ) : accessibilityMode === 'support' ? (
+              <LearningSupportPanel
                 lectureData={lectureData}
                 onOpenQuiz={() => setViewMode('quiz')}
               />
