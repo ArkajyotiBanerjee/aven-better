@@ -20,6 +20,10 @@ dist/
 backend/data/uploads/
 backend/data/transcripts/
 backend/data/extracted/
+backend/data/quizzes/
+backend/data/diagnoses/
+
+
 
 
 # Local Media / Test Video

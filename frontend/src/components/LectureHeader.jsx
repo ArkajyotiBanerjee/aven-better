@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function LectureHeader({ filename, onReset, activeCategoryCount }) {
+export default function LectureHeader({ filename, onReset, onOpenQuiz }) {
   return (
     <header className="lecture-header" role="banner">
       <div className="header-brand-group">
@@ -21,6 +21,18 @@ export default function LectureHeader({ filename, onReset, activeCategoryCount }
             <span className="file-name">{filename}</span>
           </div>
         )}
+
+        {onOpenQuiz && (
+          <button
+            type="button"
+            className="btn-quiz-cta"
+            onClick={onOpenQuiz}
+            aria-label="Test understanding with adaptive quiz"
+          >
+            <span aria-hidden="true">📝</span> Test My Understanding
+          </button>
+        )}
+
         {onReset && (
           <button 
             onClick={onReset} 
@@ -34,3 +46,4 @@ export default function LectureHeader({ filename, onReset, activeCategoryCount }
     </header>
   );
 }
+

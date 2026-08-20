@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api import upload, extract
+from app.api import upload, extract, quiz, diagnosis
 
 app = FastAPI(title="AccessLearn API")
 
@@ -14,6 +14,8 @@ app.add_middleware(
 
 app.include_router(upload.router, prefix="/api/lectures", tags=["lectures"])
 app.include_router(extract.router, prefix="/api/lectures", tags=["lectures"])
+app.include_router(quiz.router, prefix="/api/lectures", tags=["lectures"])
+app.include_router(diagnosis.router, prefix="/api/lectures", tags=["lectures"])
 
 @app.get("/api/health")
 def health_check():
@@ -21,4 +23,6 @@ def health_check():
         "status": "ok",
         "service": "accesslearn-backend"
     }
+
+
 

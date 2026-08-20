@@ -4,6 +4,8 @@ import CaptionPanel from './components/CaptionPanel';
 import InsightPanel from './components/InsightPanel';
 import ConceptTimeline from './components/ConceptTimeline';
 import UploadSection from './components/UploadSection';
+import QuizPanel from './components/QuizPanel';
+import DiagnosisPanel from './components/DiagnosisPanel';
 import './App.css';
 
 const API_BASE_URL = 'http://localhost:8000';
@@ -14,6 +16,8 @@ function App() {
   const [status, setStatus] = useState('idle'); // idle, uploading, transcribing, extracting, success, error
   const [errorMsg, setErrorMsg] = useState('');
   const [lectureData, setLectureData] = useState(null);
+  const [viewMode, setViewMode] = useState('lecture'); // 'lecture' | 'quiz' | 'diagnosis'
+  const [evaluationResults, setEvaluationResults] = useState(null);
 
   // Active interaction states for bidirectional linking
   const [activeSegmentIndex, setActiveSegmentIndex] = useState(null);
@@ -25,6 +29,7 @@ function App() {
       setStatus('idle');
       setErrorMsg('');
       setLectureData(null);
+      setViewMode('lecture');
     }
   };
 
@@ -33,6 +38,7 @@ function App() {
     setStatus('idle');
     setErrorMsg('');
     setLectureData(null);
+    setViewMode('lecture');
     setActiveSegmentIndex(null);
     setActiveInsightId(null);
   };
@@ -143,6 +149,7 @@ function App() {
     setStatus('uploading');
     setErrorMsg('');
     setLectureData(null);
+    setViewMode('lecture');
 
     const formData = new FormData();
     formData.append('file', file);
@@ -188,6 +195,7 @@ function App() {
   const loadDemoLecture = async () => {
     setStatus('extracting');
     setErrorMsg('');
+    setViewMode('lecture');
     try {
       const res = await fetch(`${API_BASE_URL}/api/lectures/${DEMO_LECTURE_ID}/extract`, {
         method: 'POST',
@@ -242,40 +250,60 @@ function App() {
   return (
     <div className="accesslearn-app">
       {status === 'success' && lectureData ? (
-        <div className="learning-workspace">
-          <LectureHeader
-            filename={lectureData.filename || 'Lecture'}
-            onReset={handleReset}
-            activeCategoryCount={structuredInsights.length}
+        viewMode === 'quiz' ? (
+          <QuizPanel
+            lectureId={lectureData.lecture_id}
+            filename={lectureData.filename}
+            onReturnToLecture={() => setViewMode('lecture')}
+            onViewDiagnosis={(resData) => {
+              setEvaluationResults(resData);
+              setViewMode('diagnosis');
+            }}
           />
-
-          <main className="learning-main" id="main-content">
-            <div className="workspace-columns">
-              <div className="column-captions">
-                <CaptionPanel
-                  segments={lectureData.transcript || []}
-                  activeSegmentIndex={activeSegmentIndex}
-                  onSelectSegment={handleSelectSegment}
-                  insights={structuredInsights}
-                />
-              </div>
-
-              <div className="column-insights">
-                <InsightPanel
-                  insights={structuredInsights}
-                  activeInsightId={activeInsightId}
-                  onSelectInsight={handleSelectInsight}
-                />
-              </div>
-            </div>
-
-            <ConceptTimeline
-              timelineItems={structuredInsights.filter(i => i.timestamp_start !== undefined)}
-              activeInsightId={activeInsightId}
-              onSelectTimelineItem={handleSelectInsight}
+        ) : viewMode === 'diagnosis' ? (
+          <DiagnosisPanel
+            lectureId={lectureData.lecture_id}
+            filename={lectureData.filename}
+            evaluationResults={evaluationResults}
+            onReturnToLecture={() => setViewMode('lecture')}
+            onReturnToQuiz={() => setViewMode('quiz')}
+          />
+        ) : (
+          <div className="learning-workspace">
+            <LectureHeader
+              filename={lectureData.filename || 'Lecture'}
+              onReset={handleReset}
+              onOpenQuiz={() => setViewMode('quiz')}
             />
-          </main>
-        </div>
+
+            <main className="learning-main" id="main-content">
+              <div className="workspace-columns">
+                <div className="column-captions">
+                  <CaptionPanel
+                    segments={lectureData.transcript || []}
+                    activeSegmentIndex={activeSegmentIndex}
+                    onSelectSegment={handleSelectSegment}
+                    insights={structuredInsights}
+                  />
+                </div>
+
+                <div className="column-insights">
+                  <InsightPanel
+                    insights={structuredInsights}
+                    activeInsightId={activeInsightId}
+                    onSelectInsight={handleSelectInsight}
+                  />
+                </div>
+              </div>
+
+              <ConceptTimeline
+                timelineItems={structuredInsights.filter(i => i.timestamp_start !== undefined)}
+                activeInsightId={activeInsightId}
+                onSelectTimelineItem={handleSelectInsight}
+              />
+            </main>
+          </div>
+        )
       ) : (
         <main id="main-content">
           <UploadSection
