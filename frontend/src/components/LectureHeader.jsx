@@ -1,6 +1,12 @@
 import React from 'react';
 
-export default function LectureHeader({ filename, onReset, onOpenQuiz }) {
+export default function LectureHeader({
+  filename,
+  onReset,
+  onOpenQuiz,
+  accessibilityMode = 'deaf',
+  onSelectMode
+}) {
   return (
     <header className="lecture-header" role="banner">
       <div className="header-brand-group">
@@ -8,10 +14,46 @@ export default function LectureHeader({ filename, onReset, onOpenQuiz }) {
           <span className="logo-icon" aria-hidden="true">⚡</span>
           <span className="logo-text">AccessLearn</span>
         </div>
-        <div className="mode-badge" role="status" aria-label="Current Mode: Deaf and Hard of Hearing Mode">
-          <span className="mode-icon" aria-hidden="true">🦻</span>
-          <span className="mode-label">Deaf / Hard-of-Hearing Mode</span>
-        </div>
+
+        {/* Accessibility Mode Switcher Tabs */}
+        <nav className="mode-switcher-nav" aria-label="Accessibility learning mode selection">
+          <div className="mode-tabs-group" role="tablist">
+            <button
+              type="button"
+              role="tab"
+              aria-selected={accessibilityMode === 'deaf'}
+              className={`mode-tab-btn ${accessibilityMode === 'deaf' ? 'active-mode' : ''}`}
+              onClick={() => onSelectMode && onSelectMode('deaf')}
+              aria-label="Switch to Deaf and Hard-of-Hearing visual learning mode"
+            >
+              <span className="tab-icon" aria-hidden="true">🦻</span>
+              <span className="tab-label">Deaf / Hard-of-Hearing</span>
+            </button>
+
+            <button
+              type="button"
+              role="tab"
+              aria-selected={accessibilityMode === 'blind'}
+              className={`mode-tab-btn ${accessibilityMode === 'blind' ? 'active-mode' : ''}`}
+              onClick={() => onSelectMode && onSelectMode('blind')}
+              aria-label="Switch to Blind and Visually-Impaired audio-first learning mode"
+            >
+              <span className="tab-icon" aria-hidden="true">🎧</span>
+              <span className="tab-label">Blind / Visually-Impaired</span>
+            </button>
+
+            <div 
+              className="mode-tab-btn mode-tab-disabled" 
+              role="tab" 
+              aria-disabled="true"
+              title="Dyslexia & cognitive learning support mode coming soon"
+            >
+              <span className="tab-icon" aria-hidden="true">🧠</span>
+              <span className="tab-label">Learning Support</span>
+              <span className="badge-coming-soon">Coming next</span>
+            </div>
+          </div>
+        </nav>
       </div>
 
       <div className="header-meta-group">
@@ -39,11 +81,10 @@ export default function LectureHeader({ filename, onReset, onOpenQuiz }) {
             className="btn-secondary btn-sm"
             aria-label="Upload or switch to another lecture"
           >
-            <span aria-hidden="true">⟲</span> Upload New Lecture
+            <span aria-hidden="true">⟲</span> Upload New
           </button>
         )}
       </div>
     </header>
   );
 }
-

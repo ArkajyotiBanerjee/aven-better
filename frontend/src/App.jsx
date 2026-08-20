@@ -6,6 +6,7 @@ import ConceptTimeline from './components/ConceptTimeline';
 import UploadSection from './components/UploadSection';
 import QuizPanel from './components/QuizPanel';
 import DiagnosisPanel from './components/DiagnosisPanel';
+import BlindModePanel from './components/BlindModePanel';
 import './App.css';
 
 const API_BASE_URL = 'http://localhost:8000';
@@ -17,6 +18,7 @@ function App() {
   const [errorMsg, setErrorMsg] = useState('');
   const [lectureData, setLectureData] = useState(null);
   const [viewMode, setViewMode] = useState('lecture'); // 'lecture' | 'quiz' | 'diagnosis'
+  const [accessibilityMode, setAccessibilityMode] = useState('deaf'); // 'deaf' | 'blind'
   const [evaluationResults, setEvaluationResults] = useState(null);
 
   // Active interaction states for bidirectional linking
@@ -274,34 +276,43 @@ function App() {
               filename={lectureData.filename || 'Lecture'}
               onReset={handleReset}
               onOpenQuiz={() => setViewMode('quiz')}
+              accessibilityMode={accessibilityMode}
+              onSelectMode={setAccessibilityMode}
             />
 
-            <main className="learning-main" id="main-content">
-              <div className="workspace-columns">
-                <div className="column-captions">
-                  <CaptionPanel
-                    segments={lectureData.transcript || []}
-                    activeSegmentIndex={activeSegmentIndex}
-                    onSelectSegment={handleSelectSegment}
-                    insights={structuredInsights}
-                  />
-                </div>
-
-                <div className="column-insights">
-                  <InsightPanel
-                    insights={structuredInsights}
-                    activeInsightId={activeInsightId}
-                    onSelectInsight={handleSelectInsight}
-                  />
-                </div>
-              </div>
-
-              <ConceptTimeline
-                timelineItems={structuredInsights.filter(i => i.timestamp_start !== undefined)}
-                activeInsightId={activeInsightId}
-                onSelectTimelineItem={handleSelectInsight}
+            {accessibilityMode === 'blind' ? (
+              <BlindModePanel
+                lectureData={lectureData}
+                onOpenQuiz={() => setViewMode('quiz')}
               />
-            </main>
+            ) : (
+              <main className="learning-main" id="main-content">
+                <div className="workspace-columns">
+                  <div className="column-captions">
+                    <CaptionPanel
+                      segments={lectureData.transcript || []}
+                      activeSegmentIndex={activeSegmentIndex}
+                      onSelectSegment={handleSelectSegment}
+                      insights={structuredInsights}
+                    />
+                  </div>
+
+                  <div className="column-insights">
+                    <InsightPanel
+                      insights={structuredInsights}
+                      activeInsightId={activeInsightId}
+                      onSelectInsight={handleSelectInsight}
+                    />
+                  </div>
+                </div>
+
+                <ConceptTimeline
+                  timelineItems={structuredInsights.filter(i => i.timestamp_start !== undefined)}
+                  activeInsightId={activeInsightId}
+                  onSelectTimelineItem={handleSelectInsight}
+                />
+              </main>
+            )}
           </div>
         )
       ) : (
