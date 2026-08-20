@@ -1,102 +1,293 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react';
+import LectureHeader from './components/LectureHeader';
+import CaptionPanel from './components/CaptionPanel';
+import InsightPanel from './components/InsightPanel';
+import ConceptTimeline from './components/ConceptTimeline';
+import UploadSection from './components/UploadSection';
+import './App.css';
+
+const API_BASE_URL = 'http://localhost:8000';
+const DEMO_LECTURE_ID = '75128b27-d0d3-49be-852b-1f397985cc38';
 
 function App() {
   const [file, setFile] = useState(null);
-  const [status, setStatus] = useState('idle'); // idle, uploading, transcribing, success, error
+  const [status, setStatus] = useState('idle'); // idle, uploading, transcribing, extracting, success, error
   const [errorMsg, setErrorMsg] = useState('');
-  const [transcriptData, setTranscriptData] = useState(null);
+  const [lectureData, setLectureData] = useState(null);
+
+  // Active interaction states for bidirectional linking
+  const [activeSegmentIndex, setActiveSegmentIndex] = useState(null);
+  const [activeInsightId, setActiveInsightId] = useState(null);
 
   const handleFileChange = (e) => {
     if (e.target.files && e.target.files.length > 0) {
       setFile(e.target.files[0]);
       setStatus('idle');
       setErrorMsg('');
-      setTranscriptData(null);
+      setLectureData(null);
     }
   };
 
+  const handleReset = () => {
+    setFile(null);
+    setStatus('idle');
+    setErrorMsg('');
+    setLectureData(null);
+    setActiveSegmentIndex(null);
+    setActiveInsightId(null);
+  };
+
+  // Convert StructuredLecture payload into a normalized, categorized insights list
+  const structuredInsights = useMemo(() => {
+    if (!lectureData) return [];
+
+    const list = [];
+
+    // Concepts
+    (lectureData.concepts || []).forEach((c, idx) => {
+      list.push({
+        id: `concept-${idx}`,
+        type: 'concept',
+        categoryLabel: 'NEW CONCEPT',
+        icon: '🆕',
+        title: c.name,
+        timestamp_start: c.timestamp_start,
+        timestamp_end: c.timestamp_end,
+        evidence: c.evidence,
+        data: c
+      });
+    });
+
+    // Definitions
+    (lectureData.definitions || []).forEach((d, idx) => {
+      list.push({
+        id: `definition-${idx}`,
+        type: 'definition',
+        categoryLabel: 'DEFINITION',
+        icon: '📖',
+        title: d.concept,
+        timestamp_start: d.timestamp_start,
+        timestamp_end: d.timestamp_end,
+        evidence: d.evidence,
+        data: d
+      });
+    });
+
+    // Formulas
+    (lectureData.formulas || []).forEach((f, idx) => {
+      list.push({
+        id: `formula-${idx}`,
+        type: 'formula',
+        categoryLabel: 'KEY FORMULA',
+        icon: '🧮',
+        title: f.name,
+        timestamp_start: f.timestamp_start,
+        timestamp_end: f.timestamp_end,
+        evidence: f.evidence,
+        data: f
+      });
+    });
+
+    // Examples
+    (lectureData.examples || []).forEach((ex, idx) => {
+      list.push({
+        id: `example-${idx}`,
+        type: 'example',
+        categoryLabel: 'WORKED EXAMPLE',
+        icon: '💡',
+        title: ex.topic,
+        timestamp_start: ex.timestamp_start,
+        timestamp_end: ex.timestamp_end,
+        evidence: ex.evidence,
+        data: ex
+      });
+    });
+
+    // Important Points
+    (lectureData.important_points || []).forEach((ip, idx) => {
+      list.push({
+        id: `point-${idx}`,
+        type: 'important_point',
+        categoryLabel: 'KEY POINT',
+        icon: '⚠️',
+        title: ip.point,
+        timestamp_start: ip.timestamp_start,
+        timestamp_end: ip.timestamp_end,
+        evidence: ip.evidence,
+        data: ip
+      });
+    });
+
+    // Relationships
+    (lectureData.relationships || []).forEach((r, idx) => {
+      list.push({
+        id: `relation-${idx}`,
+        type: 'relationship',
+        categoryLabel: 'RELATIONSHIP',
+        icon: '🔗',
+        title: `${r.source} ➔ ${r.target}`,
+        timestamp_start: undefined,
+        timestamp_end: undefined,
+        evidence: r.evidence,
+        data: r
+      });
+    });
+
+    return list;
+  }, [lectureData]);
+
+  // Upload lecture video and automatically extract educational understanding
   const processLecture = async () => {
     if (!file) return;
 
     setStatus('uploading');
     setErrorMsg('');
-    setTranscriptData(null);
+    setLectureData(null);
 
     const formData = new FormData();
     formData.append('file', file);
 
     try {
+      // Step 1: Upload & Transcribe
       setStatus('transcribing');
-      const response = await fetch('http://localhost:8000/api/lectures/upload', {
+      const uploadRes = await fetch(`${API_BASE_URL}/api/lectures/upload`, {
         method: 'POST',
         body: formData,
       });
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.detail || 'Failed to upload/transcribe');
+      if (!uploadRes.ok) {
+        const errorData = await uploadRes.json().catch(() => ({}));
+        throw new Error(errorData.detail || 'Failed to upload or transcribe lecture video');
       }
 
-      const data = await response.json();
-      setTranscriptData(data);
+      const uploadData = await uploadRes.json();
+      const lectureId = uploadData.lecture_id;
+
+      // Step 2: Extract Educational Understanding
+      setStatus('extracting');
+      const extractRes = await fetch(`${API_BASE_URL}/api/lectures/${lectureId}/extract`, {
+        method: 'POST',
+      });
+
+      if (!extractRes.ok) {
+        const errorData = await extractRes.json().catch(() => ({}));
+        throw new Error(errorData.detail || 'Failed to extract educational insights from lecture');
+      }
+
+      const extractedData = await extractRes.json();
+      setLectureData(extractedData);
       setStatus('success');
     } catch (error) {
       console.error(error);
       setStatus('error');
-      setErrorMsg(error.message || 'An error occurred during processing.');
+      setErrorMsg(error.message || 'An unexpected error occurred during processing.');
     }
   };
 
-  const formatTime = (seconds) => {
-    const min = Math.floor(seconds / 60);
-    const sec = Math.floor(seconds % 60);
-    return `${min.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
+  // Demo loader for instant testing with Newton's Second Law lecture
+  const loadDemoLecture = async () => {
+    setStatus('extracting');
+    setErrorMsg('');
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/lectures/${DEMO_LECTURE_ID}/extract`, {
+        method: 'POST',
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.detail || 'Failed to load demo lecture.');
+      }
+
+      const data = await res.json();
+      setLectureData(data);
+      setStatus('success');
+    } catch (error) {
+      console.error(error);
+      setStatus('error');
+      setErrorMsg(error.message || 'Could not load demo lecture. Make sure backend is running.');
+    }
+  };
+
+  // Bidirectional interaction handlers
+  const handleSelectSegment = (segIdx, seg) => {
+    setActiveSegmentIndex(segIdx);
+
+    // Find first matching insight that anchors to this timestamp
+    const matchingInsight = structuredInsights.find(ins => {
+      const start = ins.timestamp_start ?? 0;
+      const end = ins.timestamp_end ?? 0;
+      return (start <= seg.end && end >= seg.start);
+    });
+
+    if (matchingInsight) {
+      setActiveInsightId(matchingInsight.id);
+    }
+  };
+
+  const handleSelectInsight = (insight) => {
+    setActiveInsightId(insight.id);
+
+    // Sync to transcript segment matching timestamp_start
+    if (insight.timestamp_start !== undefined && lectureData?.transcript) {
+      const segIndex = lectureData.transcript.findIndex(
+        s => insight.timestamp_start >= s.start && insight.timestamp_start <= s.end
+      );
+
+      if (segIndex !== -1) {
+        setActiveSegmentIndex(segIndex);
+      }
+    }
   };
 
   return (
-    <div style={{ maxWidth: '800px', margin: '0 auto', padding: '2rem', fontFamily: 'sans-serif' }}>
-      <h1>AccessLearn</h1>
-      <p>Turn a lecture into an accessible learning experience.</p>
-      
-      <div style={{ padding: '2rem', background: '#f5f5f5', borderRadius: '8px', marginBottom: '2rem' }}>
-        {!file && (
-          <label style={{ cursor: 'pointer', background: '#0070f3', color: 'white', padding: '10px 20px', borderRadius: '5px' }}>
-            Upload Lecture
-            <input type="file" style={{ display: 'none' }} accept="video/mp4,video/webm,video/quicktime" onChange={handleFileChange} />
-          </label>
-        )}
-        
-        {file && (
-          <div>
-            <p><strong>{file.name}</strong></p>
-            {status === 'idle' && (
-              <button onClick={processLecture} style={{ background: '#0070f3', color: 'white', padding: '10px 20px', borderRadius: '5px', border: 'none', cursor: 'pointer' }}>
-                Process Lecture
-              </button>
-            )}
-            {status === 'uploading' && <p>Uploading lecture...</p>}
-            {status === 'transcribing' && <p>Processing lecture...<br/>Transcribing audio...</p>}
-            {status === 'error' && <p style={{ color: 'red' }}>Error: {errorMsg}</p>}
-          </div>
-        )}
-      </div>
+    <div className="accesslearn-app">
+      {status === 'success' && lectureData ? (
+        <div className="learning-workspace">
+          <LectureHeader
+            filename={lectureData.filename || 'Lecture'}
+            onReset={handleReset}
+            activeCategoryCount={structuredInsights.length}
+          />
 
-      {status === 'success' && transcriptData && (
-        <div>
-          <h2>TRANSCRIPT</h2>
-          {transcriptData.language && <p style={{ color: '#666' }}>Detected Language: {transcriptData.language}</p>}
-          
-          <div style={{ marginTop: '1rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            {transcriptData.segments.map((seg, idx) => (
-              <div key={idx} style={{ borderLeft: '4px solid #0070f3', paddingLeft: '1rem' }}>
-                <div style={{ fontWeight: 'bold', color: '#666', fontSize: '0.9rem' }}>
-                  {formatTime(seg.start)}
-                </div>
-                <div>{seg.text}</div>
+          <main className="learning-main" id="main-content">
+            <div className="workspace-columns">
+              <div className="column-captions">
+                <CaptionPanel
+                  segments={lectureData.transcript || []}
+                  activeSegmentIndex={activeSegmentIndex}
+                  onSelectSegment={handleSelectSegment}
+                  insights={structuredInsights}
+                />
               </div>
-            ))}
-          </div>
+
+              <div className="column-insights">
+                <InsightPanel
+                  insights={structuredInsights}
+                  activeInsightId={activeInsightId}
+                  onSelectInsight={handleSelectInsight}
+                />
+              </div>
+            </div>
+
+            <ConceptTimeline
+              timelineItems={structuredInsights.filter(i => i.timestamp_start !== undefined)}
+              activeInsightId={activeInsightId}
+              onSelectTimelineItem={handleSelectInsight}
+            />
+          </main>
         </div>
+      ) : (
+        <main id="main-content">
+          <UploadSection
+            file={file}
+            onFileChange={handleFileChange}
+            onProcessLecture={processLecture}
+            onLoadDemo={loadDemoLecture}
+            status={status}
+            errorMsg={errorMsg}
+            onReset={handleReset}
+          />
+        </main>
       )}
     </div>
   );

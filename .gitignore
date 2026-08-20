@@ -19,6 +19,8 @@ dist/
 # Generated Runtime Data
 backend/data/uploads/
 backend/data/transcripts/
+backend/data/extracted/
+
 
 # Local Media / Test Video
 backend/lecture1.mp4
