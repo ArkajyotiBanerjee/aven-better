@@ -1,0 +1,192 @@
+{
+  "lecture_id": "dsa-sliding-window-01",
+  "filename": "sliding_window1.mp4",
+  "language": "en",
+  "transcript": [
+    {
+      "start": 0.0,
+      "end": 4.28,
+      "text": "to find sub arrays of a fixed size within an array efficiently."
+    },
+    {
+      "start": 4.28,
+      "end": 8.32,
+      "text": "Suppose you have to find a sub array of size k with a maximum sum in an array."
+    },
+    {
+      "start": 8.32,
+      "end": 10.68,
+      "text": "Then this sliding window method proves handy."
+    },
+    {
+      "start": 10.68,
+      "end": 17.04,
+      "text": "Initially select the first sub array from index 0 to k-1 and store its size somewhere."
+    },
+    {
+      "start": 17.04,
+      "end": 21.28,
+      "text": "Consider this selected range of elements as a window from index 0 to k-1."
+    },
+    {
+      "start": 21.28,
+      "end": 25.080000000000002,
+      "text": "Now slide the window by one element that is from index 1 to k."
+    },
+    {
+      "start": 25.080000000000002,
+      "end": 29.52,
+      "text": "Now add the value at index k to the last calculated sum and subtract the value"
+    },
+    {
+      "start": 29.52,
+      "end": 31.24,
+      "text": "at index 0 from it."
+    },
+    {
+      "start": 31.24,
+      "end": 35.64,
+      "text": "It will give you the size of this new window, that is this new selected sub array."
+    },
+    {
+      "start": 35.64,
+      "end": 39.96,
+      "text": "If it's greater than the size of the previous sub array, then consider it as the maximum"
+    },
+    {
+      "start": 39.96,
+      "end": 42.36,
+      "text": "until you get another sub array with more sum."
+    },
+    {
+      "start": 42.36,
+      "end": 46.84,
+      "text": "Then again shift the window by one element and repeat the same process to find the"
+    },
+    {
+      "start": 46.84,
+      "end": 49.519999999999996,
+      "text": "new sub array and calculate its sum using this"
+    }
+  ],
+  "concepts": [
+    {
+      "name": "Sliding Window Method",
+      "description": "An algorithmic technique that processes a fixed-size subarray by moving a window across the array and updating the sum efficiently.",
+      "timestamp_start": 8.32,
+      "timestamp_end": 39.96,
+      "evidence": "Then this sliding window method proves handy."
+    },
+    {
+      "name": "Sub Array",
+      "description": "A contiguous sequence of elements within an array.",
+      "timestamp_start": 4.28,
+      "timestamp_end": 10.68,
+      "evidence": "Suppose you have to find a sub array of size k with a maximum sum in an array."
+    },
+    {
+      "name": "Window",
+      "description": "The current segment of the array being considered, defined by its start and end indices.",
+      "timestamp_start": 17.04,
+      "timestamp_end": 25.08,
+      "evidence": "Consider this selected range of elements as a window from index 0 to k-1."
+    },
+    {
+      "name": "Sum Update",
+      "description": "The incremental calculation of a new window sum by adding the entering element and subtracting the exiting element.",
+      "timestamp_start": 25.08,
+      "timestamp_end": 31.24,
+      "evidence": "Now add the value at index k to the last calculated sum and subtract the value at index 0 from it."
+    }
+  ],
+  "definitions": [
+    {
+      "concept": "Sliding Window Method",
+      "definition": "A technique that slides a fixed-size window across an array, updating the sum in O(1) time per step.",
+      "timestamp_start": 8.32,
+      "timestamp_end": 39.96,
+      "evidence": "Then this sliding window method proves handy."
+    },
+    {
+      "concept": "Sub Array",
+      "definition": "A contiguous subsequence of an array of a specified length.",
+      "timestamp_start": 4.28,
+      "timestamp_end": 10.68,
+      "evidence": "Suppose you have to find a sub array of size k with a maximum sum in an array."
+    },
+    {
+      "concept": "Window",
+      "definition": "The current segment of the array being examined, bounded by start and end indices.",
+      "timestamp_start": 17.04,
+      "timestamp_end": 25.08,
+      "evidence": "Consider this selected range of elements as a window from index 0 to k-1."
+    },
+    {
+      "concept": "Sum Update",
+      "definition": "The process of computing the new window sum by adding the new element and subtracting the element that leaves the window.",
+      "timestamp_start": 25.08,
+      "timestamp_end": 31.24,
+      "evidence": "Now add the value at index k to the last calculated sum and subtract the value at index 0 from it."
+    }
+  ],
+  "formulas": [
+    {
+      "name": "Sum Update Formula",
+      "expression": "new_sum = old_sum + arr[k] - arr[0]",
+      "variables": [
+        "old_sum",
+        "arr[k]",
+        "arr[0]"
+      ],
+      "timestamp_start": 25.08,
+      "timestamp_end": 31.24,
+      "evidence": "Now add the value at index k to the last calculated sum and subtract the value at index 0 from it."
+    }
+  ],
+  "examples": [
+    {
+      "topic": "Maximum Sum Subarray of Size k",
+      "description": "Finding the sub array of size k that yields the maximum sum in an array using the sliding window method.",
+      "result": "The sub array with the highest sum among all size‑k sub arrays.",
+      "timestamp_start": 4.28,
+      "timestamp_end": 39.96,
+      "evidence": "Suppose you have to find a sub array of size k with a maximum sum in an array. Then this sliding window method proves handy."
+    }
+  ],
+  "important_points": [
+    {
+      "point": "Sliding window reduces time complexity from O(nk) to O(n) for fixed-size subarray sum problems.",
+      "importance_reason": "By updating the sum incrementally, each element is processed only once.",
+      "timestamp_start": 8.32,
+      "timestamp_end": 39.96,
+      "evidence": "Then this sliding window method proves handy."
+    },
+    {
+      "point": "Updating the sum requires adding the entering element and subtracting the exiting element.",
+      "importance_reason": "This allows constant‑time updates as the window slides.",
+      "timestamp_start": 25.08,
+      "timestamp_end": 31.24,
+      "evidence": "Now add the value at index k to the last calculated sum and subtract the value at index 0 from it."
+    }
+  ],
+  "relationships": [
+    {
+      "source": "Sliding Window Method",
+      "relationship": "uses",
+      "target": "Sub Array",
+      "evidence": "Suppose you have to find a sub array of size k with a maximum sum in an array. Then this sliding window method proves handy."
+    },
+    {
+      "source": "Sliding Window Method",
+      "relationship": "updates",
+      "target": "Sum Update",
+      "evidence": "Now add the value at index k to the last calculated sum and subtract the value at index 0 from it."
+    },
+    {
+      "source": "Window",
+      "relationship": "produces",
+      "target": "Sub Array",
+      "evidence": "Consider this selected range of elements as a window from index 0 to k-1."
+    }
+  ]
+}

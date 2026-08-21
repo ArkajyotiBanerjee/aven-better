@@ -14,7 +14,7 @@ import {
   Sparkles
 } from 'lucide-react';
 
-const API_BASE_URL = 'http://localhost:8000';
+const API_BASE_URL = '';
 const OPTION_LABELS = ['A', 'B', 'C', 'D'];
 
 export default function DiagnosisPanel({

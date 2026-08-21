@@ -18,10 +18,14 @@ dist/
 
 # Generated Runtime Data
 backend/data/uploads/
-backend/data/transcripts/
-backend/data/extracted/
-backend/data/quizzes/
-backend/data/diagnoses/
+backend/data/transcripts/*
+!backend/data/transcripts/dsa-sliding-window-01.json
+backend/data/extracted/*
+!backend/data/extracted/dsa-sliding-window-01.json
+backend/data/quizzes/*
+!backend/data/quizzes/dsa-sliding-window-01.json
+backend/data/diagnoses/*
+!backend/data/diagnoses/dsa-sliding-window-01.json
 
 
 

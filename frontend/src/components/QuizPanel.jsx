@@ -8,7 +8,7 @@ import {
 import QuizQuestion from './QuizQuestion';
 import QuizResults from './QuizResults';
 
-const API_BASE_URL = 'http://localhost:8000';
+const API_BASE_URL = '';
 
 export default function QuizPanel({
   lectureId,

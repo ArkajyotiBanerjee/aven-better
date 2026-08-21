@@ -1,0 +1,55 @@
+{
+  "lecture_id": "dsa-sliding-window-01",
+  "total_score": 5,
+  "total_questions": 5,
+  "percentage": 100.0,
+  "skill_breakdowns": [
+    {
+      "skill": "recall",
+      "attempted": 1,
+      "correct": 1,
+      "accuracy": 100.0
+    },
+    {
+      "skill": "comprehension",
+      "attempted": 2,
+      "correct": 2,
+      "accuracy": 100.0
+    },
+    {
+      "skill": "application",
+      "attempted": 2,
+      "correct": 2,
+      "accuracy": 100.0
+    }
+  ],
+  "concept_breakdowns": [
+    {
+      "concept": "Sliding Window Method",
+      "attempted": 3,
+      "correct": 3,
+      "accuracy": 100.0
+    },
+    {
+      "concept": "Sum Update Formula",
+      "attempted": 1,
+      "correct": 1,
+      "accuracy": 100.0
+    },
+    {
+      "concept": "Sum Update",
+      "attempted": 1,
+      "correct": 1,
+      "accuracy": 100.0
+    }
+  ],
+  "strengths": [
+    "Accurate recall of definitions and core principles",
+    "Strong comprehension of formula variables and relationships",
+    "Proficient in calculating and applying formulas to scenarios"
+  ],
+  "learning_gaps": [],
+  "confidence": "high",
+  "recommended_focus": "You have mastered this topic! Ready to explore advanced tracks.",
+  "remediation": null
+}

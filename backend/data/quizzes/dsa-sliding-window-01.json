@@ -1,0 +1,90 @@
+{
+  "lecture_id": "dsa-sliding-window-01",
+  "questions": [
+    {
+      "id": "q1",
+      "question": "What is the definition of the Sliding Window Method as described in the lecture?",
+      "type": "definition",
+      "options": [
+        "A technique that divides an array into halves and processes each half separately.",
+        "An algorithm that uses recursion to compute subarray sums.",
+        "A method that sorts an array and then finds subarrays of maximum sum.",
+        "A technique that slides a fixed-size window across an array, updating the sum in O(1) time per step."
+      ],
+      "correct_answer": "A technique that slides a fixed-size window across an array, updating the sum in O(1) time per step.",
+      "explanation": "The lecture defines the Sliding Window Method as a technique that slides a fixed-size window across an array, updating the sum in O(1) time per step.",
+      "concept": "Sliding Window Method",
+      "skill": "recall",
+      "difficulty": "easy",
+      "source_timestamp": 8.32
+    },
+    {
+      "id": "q2",
+      "question": "Which of the following is the correct Sum Update Formula presented in the lecture?",
+      "type": "formula",
+      "options": [
+        "new_sum = old_sum - arr[k] + arr[0]",
+        "new_sum = old_sum + arr[k] - arr[0]",
+        "new_sum = old_sum + arr[k] + arr[0]",
+        "new_sum = old_sum - arr[k] - arr[0]"
+      ],
+      "correct_answer": "new_sum = old_sum + arr[k] - arr[0]",
+      "explanation": "The lecture states that the new window sum is calculated by adding the entering element arr[k] and subtracting the exiting element arr[0] from the old sum.",
+      "concept": "Sum Update Formula",
+      "skill": "comprehension",
+      "difficulty": "medium",
+      "source_timestamp": 25.08
+    },
+    {
+      "id": "q3",
+      "question": "If the current window sum is 10, the element entering the window is 5, and the element leaving the window is 3, what is the new window sum?",
+      "type": "application",
+      "options": [
+        "10",
+        "12",
+        "8",
+        "15"
+      ],
+      "correct_answer": "12",
+      "explanation": "Using the Sum Update Formula: new_sum = old_sum + arr[k] - arr[0] = 10 + 5 - 3 = 12.",
+      "concept": "Sum Update",
+      "skill": "application",
+      "difficulty": "medium",
+      "source_timestamp": 25.08
+    },
+    {
+      "id": "q4",
+      "question": "Which relationship best describes how the Sliding Window Method interacts with Sub Array according to the lecture?",
+      "type": "concept",
+      "options": [
+        "uses",
+        "produces",
+        "updates",
+        "depends on"
+      ],
+      "correct_answer": "uses",
+      "explanation": "The lecture notes that the Sliding Window Method uses Sub Array to find the maximum sum subarray of size k.",
+      "concept": "Sliding Window Method",
+      "skill": "comprehension",
+      "difficulty": "medium",
+      "source_timestamp": 8.32
+    },
+    {
+      "id": "q5",
+      "question": "Using the Sliding Window Method, what is the maximum sum of a subarray of size 3 in the array [1, 2, 3, 4, 5]?",
+      "type": "application",
+      "options": [
+        "15",
+        "9",
+        "10",
+        "12"
+      ],
+      "correct_answer": "12",
+      "explanation": "The subarrays of size 3 are [1,2,3]=6, [2,3,4]=9, [3,4,5]=12. The maximum sum is 12, found by sliding the window across the array.",
+      "concept": "Sliding Window Method",
+      "skill": "application",
+      "difficulty": "hard",
+      "source_timestamp": 39.96
+    }
+  ]
+}

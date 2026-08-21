@@ -17,7 +17,7 @@ import MissionList from './MissionList';
 import AchievementGrid from './AchievementGrid';
 import RecentActivity from './RecentActivity';
 
-const API_BASE_URL = 'http://localhost:8000';
+const API_BASE_URL = '';
 
 export default function CareerOSDashboard({
   onNavigateToLecture,

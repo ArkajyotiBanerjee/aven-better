@@ -12,7 +12,7 @@ import LearningSupportPanel from './components/LearningSupportPanel';
 import CareerOSDashboard from './components/dashboard/CareerOSDashboard';
 import './App.css';
 
-const API_BASE_URL = 'http://localhost:8000';
+const API_BASE_URL = '';
 const DEMO_LECTURE_ID = 'dsa-sliding-window-01';
 
 const DEFAULT_DEMO_EVALUATION = {
