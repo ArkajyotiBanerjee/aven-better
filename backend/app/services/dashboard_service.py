@@ -79,7 +79,7 @@ class DashboardService:
             print(f"Warning: Failed to read JSON file {filepath}: {e}")
             return None
 
-    def get_dashboard_overview(self) -> DashboardOverviewResponse:
+    def get_dashboard_overview(self, user: Optional[Any] = None) -> DashboardOverviewResponse:
         # 1. Gather all extracted lectures
         extracted_lectures: Dict[str, Dict[str, Any]] = {}
         if EXTRACTED_DIR.exists():
@@ -146,8 +146,10 @@ class DashboardService:
         elif has_stem:
             track_name = "Classical Mechanics & STEM"
 
+        learner_name = user.name if (user and hasattr(user, "name") and user.name) else "Alex Mercer"
+
         profile = LearnerProfile(
-            name="Alex Mercer",
+            name=learner_name,
             track=track_name,
             total_lectures=total_lectures_count,
             completed_lectures=completed_lectures_count,
@@ -367,6 +369,16 @@ class DashboardService:
         ]
 
         # 9. Recent Activity Timeline
+        user_progress_map = {}
+        if user and hasattr(user, "id"):
+            try:
+                from app.services.progress_service import ProgressService
+                progs = ProgressService.get_instance().get_user_progress(user.id)
+                for p in progs:
+                    user_progress_map[p.lecture_id] = p
+            except Exception as e:
+                print(f"Warning: Failed to load user progress for dashboard: {e}")
+
         recent_activity: List[RecentActivity] = []
         for lecture_id, lec in extracted_lectures.items():
             filename = lec.get("filename", "Lecture")
@@ -376,13 +388,21 @@ class DashboardService:
                 if first_concept:
                     title = first_concept
 
+            user_prog = user_progress_map.get(lecture_id)
             diag = diagnoses.get(lecture_id)
-            if diag:
+
+            if user_prog and user_prog.latest_quiz_score is not None:
+                last_score = float(user_prog.latest_quiz_score)
+                status = "Completed" if last_score >= 80 else "Remediation In Progress"
+                ts = user_prog.updated_at
+            elif diag:
                 last_score = float(diag.get("percentage", 75.0))
                 status = "Remediation In Progress" if diag.get("learning_gaps") else "Completed"
+                ts = datetime.now(timezone.utc).isoformat()
             else:
                 last_score = 0.0
                 status = "Assessment Pending"
+                ts = datetime.now(timezone.utc).isoformat()
 
             # Use current ISO timestamp or mock recent date
             recent_activity.append(
@@ -391,7 +411,7 @@ class DashboardService:
                     title=title,
                     last_score=last_score,
                     status=status,
-                    timestamp=datetime.now(timezone.utc).isoformat(),
+                    timestamp=ts,
                 )
             )
 

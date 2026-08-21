@@ -24,7 +24,8 @@ export default function CareerOSDashboard({
   onNavigateToUpload,
   onLaunchRemediation,
   onSelectAccessibilityMode,
-  hasActiveLecture = false
+  hasActiveLecture = false,
+  user = null
 }) {
   const [dashboardData, setDashboardData] = useState(null);
   const [status, setStatus] = useState('loading'); // 'loading' | 'ready' | 'error'
@@ -34,7 +35,9 @@ export default function CareerOSDashboard({
     setStatus('loading');
     setErrorMsg('');
     try {
-      const res = await fetch(`${API_BASE_URL}/api/dashboard`);
+      const res = await fetch(`${API_BASE_URL}/api/dashboard`, {
+        credentials: 'include'
+      });
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
         throw new Error(err.detail || 'Failed to load Aven.better dashboard analytics.');
@@ -51,7 +54,7 @@ export default function CareerOSDashboard({
 
   useEffect(() => {
     fetchDashboardData();
-  }, []);
+  }, [user]);
 
   const handleExecuteMission = (mission) => {
     if (mission.action_type === 'open_remediation') {

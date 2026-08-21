@@ -26,6 +26,10 @@ backend/data/quizzes/*
 !backend/data/quizzes/dsa-sliding-window-01.json
 backend/data/diagnoses/*
 !backend/data/diagnoses/dsa-sliding-window-01.json
+backend/data/*.db
+backend/data/*.sqlite3
+*.db
+*.sqlite3
 
 
 

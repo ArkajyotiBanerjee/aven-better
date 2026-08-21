@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { LayoutDashboard, BookOpen, UploadCloud } from 'lucide-react';
 import LectureHeader from './components/LectureHeader';
 import CaptionPanel from './components/CaptionPanel';
@@ -10,6 +10,7 @@ import DiagnosisPanel from './components/DiagnosisPanel';
 import BlindModePanel from './components/BlindModePanel';
 import LearningSupportPanel from './components/LearningSupportPanel';
 import CareerOSDashboard from './components/dashboard/CareerOSDashboard';
+import GoogleAuthButton from './components/GoogleAuthButton';
 import './App.css';
 
 const API_BASE_URL = '';
@@ -80,6 +81,7 @@ const DEFAULT_DEMO_EVALUATION = {
 };
 
 function App() {
+  const [user, setUser] = useState(null);
   const [file, setFile] = useState(null);
   const [status, setStatus] = useState('idle'); // idle, uploading, transcribing, extracting, success, error
   const [errorMsg, setErrorMsg] = useState('');
@@ -96,6 +98,34 @@ function App() {
   // Active interaction states for bidirectional linking
   const [activeSegmentIndex, setActiveSegmentIndex] = useState(null);
   const [activeInsightId, setActiveInsightId] = useState(null);
+
+  // Check authenticated session on startup
+  useEffect(() => {
+    const verifyAuth = async () => {
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/auth/me`, {
+          credentials: 'include',
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.user) {
+            setUser(data.user);
+          }
+        }
+      } catch (err) {
+        // Anonymous fallback
+      }
+    };
+    verifyAuth();
+  }, []);
+
+  const handleLogin = (authenticatedUser) => {
+    setUser(authenticatedUser);
+  };
+
+  const handleLogout = () => {
+    setUser(null);
+  };
 
   const handleFileChange = (e) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -351,6 +381,14 @@ function App() {
             <span className="brand-sep">|</span>
             <span className="brand-subtitle">Learning Intelligence</span>
           </div>
+
+          <div className="nav-auth-slot">
+            <GoogleAuthButton
+              user={user}
+              onLogin={handleLogin}
+              onLogout={handleLogout}
+            />
+          </div>
         </div>
       </header>
 
@@ -409,6 +447,7 @@ function App() {
             loadDemoLecture('lecture');
           }}
           hasActiveLecture={Boolean(lectureData)}
+          user={user}
         />
       ) : appView === 'upload' ? (
         <main id="main-content">
@@ -434,6 +473,19 @@ function App() {
                 onViewDiagnosis={(resData) => {
                   setEvaluationResults(resData);
                   setViewMode('diagnosis');
+                  if (user && lectureData) {
+                    fetch(`${API_BASE_URL}/api/user/progress`, {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      credentials: 'include',
+                      body: JSON.stringify({
+                        lecture_id: lectureData.lecture_id,
+                        latest_quiz_score: resData.percentage,
+                        latest_quiz_data: resData,
+                        readiness_score: resData.percentage >= 80 ? 88.1 : resData.percentage
+                      })
+                    }).catch(err => console.warn('Progress save notice:', err));
+                  }
                 }}
               />
             ) : viewMode === 'diagnosis' ? (
