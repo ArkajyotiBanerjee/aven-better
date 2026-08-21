@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { LayoutDashboard, BookOpen, UploadCloud } from 'lucide-react';
 import LectureHeader from './components/LectureHeader';
 import CaptionPanel from './components/CaptionPanel';
 import InsightPanel from './components/InsightPanel';
@@ -8,17 +9,87 @@ import QuizPanel from './components/QuizPanel';
 import DiagnosisPanel from './components/DiagnosisPanel';
 import BlindModePanel from './components/BlindModePanel';
 import LearningSupportPanel from './components/LearningSupportPanel';
+import CareerOSDashboard from './components/dashboard/CareerOSDashboard';
 import './App.css';
 
 const API_BASE_URL = 'http://localhost:8000';
-const DEMO_LECTURE_ID = '75128b27-d0d3-49be-852b-1f397985cc38';
+const DEMO_LECTURE_ID = 'dsa-sliding-window-01';
+
+const DEFAULT_DEMO_EVALUATION = {
+  lecture_id: DEMO_LECTURE_ID,
+  total_score: 4,
+  total_questions: 5,
+  percentage: 80.0,
+  results: [
+    {
+      question_id: "q1",
+      question: "What is the definition of the Sliding Window Method as described in the lecture?",
+      is_correct: true,
+      selected_answer: "A technique that slides a fixed-size window across an array, updating the sum in O(1) time per step.",
+      correct_answer: "A technique that slides a fixed-size window across an array, updating the sum in O(1) time per step.",
+      concept: "Sliding Window Method",
+      skill: "recall",
+      difficulty: "easy",
+      explanation: "The lecture defines the Sliding Window Method as a technique that slides a fixed-size window across an array, updating the sum in O(1) time per step."
+    },
+    {
+      question_id: "q2",
+      question: "Which of the following is the correct Sum Update Formula presented in the lecture?",
+      is_correct: true,
+      selected_answer: "new_sum = old_sum + arr[k] - arr[0]",
+      correct_answer: "new_sum = old_sum + arr[k] - arr[0]",
+      concept: "Sum Update Formula",
+      skill: "comprehension",
+      difficulty: "medium",
+      explanation: "The lecture states that the new window sum is calculated by adding the entering element arr[k] and subtracting the exiting element arr[0] from the old sum."
+    },
+    {
+      question_id: "q3",
+      question: "If the current window sum is 10, the element entering the window is 5, and the element leaving the window is 3, what is the new window sum?",
+      is_correct: false,
+      selected_answer: "8",
+      correct_answer: "12",
+      concept: "Sum Update",
+      skill: "application",
+      difficulty: "medium",
+      explanation: "Using the Sum Update Formula: new_sum = old_sum + arr[k] - arr[0] = 10 + 5 - 3 = 12."
+    },
+    {
+      question_id: "q4",
+      question: "Which relationship best describes how the Sliding Window Method interacts with Sub Array according to the lecture?",
+      is_correct: true,
+      selected_answer: "uses",
+      correct_answer: "uses",
+      concept: "Sliding Window Method",
+      skill: "comprehension",
+      difficulty: "medium",
+      explanation: "The lecture notes that the Sliding Window Method uses Sub Array to find the maximum sum subarray of size k."
+    },
+    {
+      question_id: "q5",
+      question: "Using the Sliding Window Method, what is the maximum sum of a subarray of size 3 in the array [1, 2, 3, 4, 5]?",
+      is_correct: true,
+      selected_answer: "12",
+      correct_answer: "12",
+      concept: "Sliding Window Method",
+      skill: "application",
+      difficulty: "hard",
+      explanation: "The subarrays of size 3 are [1,2,3]=6, [2,3,4]=9, [3,4,5]=12. The maximum sum is 12."
+    }
+  ]
+};
 
 function App() {
   const [file, setFile] = useState(null);
   const [status, setStatus] = useState('idle'); // idle, uploading, transcribing, extracting, success, error
   const [errorMsg, setErrorMsg] = useState('');
   const [lectureData, setLectureData] = useState(null);
-  const [viewMode, setViewMode] = useState('lecture'); // 'lecture' | 'quiz' | 'diagnosis'
+  
+  // Top-level navigation state: 'dashboard' | 'lecture' | 'upload'
+  const [appView, setAppView] = useState('dashboard');
+  
+  // Lecture-level view state: 'lecture' | 'quiz' | 'diagnosis'
+  const [viewMode, setViewMode] = useState('lecture');
   const [accessibilityMode, setAccessibilityMode] = useState('deaf'); // 'deaf' | 'blind' | 'support'
   const [evaluationResults, setEvaluationResults] = useState(null);
 
@@ -33,6 +104,7 @@ function App() {
       setErrorMsg('');
       setLectureData(null);
       setViewMode('lecture');
+      setAppView('upload');
     }
   };
 
@@ -42,6 +114,7 @@ function App() {
     setErrorMsg('');
     setLectureData(null);
     setViewMode('lecture');
+    setAppView('upload');
     setActiveSegmentIndex(null);
     setActiveInsightId(null);
   };
@@ -187,6 +260,7 @@ function App() {
       const extractedData = await extractRes.json();
       setLectureData(extractedData);
       setStatus('success');
+      setAppView('lecture');
     } catch (error) {
       console.error(error);
       setStatus('error');
@@ -194,11 +268,17 @@ function App() {
     }
   };
 
-  // Demo loader for instant testing with Newton's Second Law lecture
-  const loadDemoLecture = async () => {
+  // Demo loader for instant testing with Sliding Window DSA benchmark lecture
+  const loadDemoLecture = async (targetViewMode = 'lecture') => {
+    if (lectureData && status === 'success') {
+      setViewMode(targetViewMode);
+      setAppView('lecture');
+      return lectureData;
+    }
+
     setStatus('extracting');
     setErrorMsg('');
-    setViewMode('lecture');
+    setViewMode(targetViewMode);
     try {
       const res = await fetch(`${API_BASE_URL}/api/lectures/${DEMO_LECTURE_ID}/extract`, {
         method: 'POST',
@@ -212,11 +292,22 @@ function App() {
       const data = await res.json();
       setLectureData(data);
       setStatus('success');
+      setAppView('lecture');
+      return data;
     } catch (error) {
       console.error(error);
       setStatus('error');
       setErrorMsg(error.message || 'Could not load demo lecture. Make sure backend is running.');
+      return null;
     }
+  };
+
+  // Direct action from Dashboard Gap Card -> Launches Remediation Mini-Lesson
+  const handleLaunchRemediation = async (gap) => {
+    await loadDemoLecture('diagnosis');
+    setEvaluationResults(prev => prev || DEFAULT_DEMO_EVALUATION);
+    setViewMode('diagnosis');
+    setAppView('lecture');
   };
 
   // Bidirectional interaction handlers
@@ -252,87 +343,172 @@ function App() {
 
   return (
     <div className="accesslearn-app">
-      {status === 'success' && lectureData ? (
-        viewMode === 'quiz' ? (
-          <QuizPanel
-            lectureId={lectureData.lecture_id}
-            filename={lectureData.filename}
-            onReturnToLecture={() => setViewMode('lecture')}
-            onViewDiagnosis={(resData) => {
-              setEvaluationResults(resData);
-              setViewMode('diagnosis');
-            }}
-          />
-        ) : viewMode === 'diagnosis' ? (
-          <DiagnosisPanel
-            lectureId={lectureData.lecture_id}
-            filename={lectureData.filename}
-            evaluationResults={evaluationResults}
-            onReturnToLecture={() => setViewMode('lecture')}
-            onReturnToQuiz={() => setViewMode('quiz')}
-          />
-        ) : (
-          <div className="learning-workspace">
-            <LectureHeader
-              filename={lectureData.filename || 'Lecture'}
-              onReset={handleReset}
-              onOpenQuiz={() => setViewMode('quiz')}
-              accessibilityMode={accessibilityMode}
-              onSelectMode={setAccessibilityMode}
-            />
-
-            {accessibilityMode === 'blind' ? (
-              <BlindModePanel
-                lectureData={lectureData}
-                onOpenQuiz={() => setViewMode('quiz')}
-              />
-            ) : accessibilityMode === 'support' ? (
-              <LearningSupportPanel
-                lectureData={lectureData}
-                onOpenQuiz={() => setViewMode('quiz')}
-              />
-            ) : (
-              <main className="learning-main" id="main-content">
-                <div className="workspace-columns">
-                  <div className="column-captions">
-                    <CaptionPanel
-                      segments={lectureData.transcript || []}
-                      activeSegmentIndex={activeSegmentIndex}
-                      onSelectSegment={handleSelectSegment}
-                      insights={structuredInsights}
-                    />
-                  </div>
-
-                  <div className="column-insights">
-                    <InsightPanel
-                      insights={structuredInsights}
-                      activeInsightId={activeInsightId}
-                      onSelectInsight={handleSelectInsight}
-                    />
-                  </div>
-                </div>
-
-                <ConceptTimeline
-                  timelineItems={structuredInsights.filter(i => i.timestamp_start !== undefined)}
-                  activeInsightId={activeInsightId}
-                  onSelectTimelineItem={handleSelectInsight}
-                />
-              </main>
-            )}
+      {/* Top Application Global Brand Header */}
+      <header className="global-app-nav" aria-label="Aven.better header">
+        <div className="nav-container">
+          <div className="nav-brand" onClick={() => setAppView('dashboard')} role="button" tabIndex="0">
+            <span className="brand-logo-aven">Aven<span className="brand-dot">.</span>better</span>
+            <span className="brand-sep">|</span>
+            <span className="brand-subtitle">Learning Intelligence</span>
           </div>
-        )
-      ) : (
+        </div>
+      </header>
+
+      {/* Fixed Vertical Navigation Dock (Right-Mounted, Centered, Solid Deep Forest) */}
+      <aside className="fixed-vertical-nav" aria-label="Primary navigation rail">
+        <button
+          type="button"
+          className={`vert-nav-item ${appView === 'dashboard' ? 'active' : ''}`}
+          onClick={() => setAppView('dashboard')}
+          aria-label="Navigate to Dashboard"
+          aria-current={appView === 'dashboard' ? 'page' : undefined}
+        >
+          <LayoutDashboard size={20} className="vert-nav-icon" aria-hidden="true" />
+          <span className="vert-nav-label">Dashboard</span>
+        </button>
+
+        <button
+          type="button"
+          className={`vert-nav-item ${appView === 'lecture' ? 'active' : ''}`}
+          onClick={() => {
+            if (lectureData) {
+              setAppView('lecture');
+            } else {
+              loadDemoLecture('lecture');
+            }
+          }}
+          aria-label="Navigate to Learning Studio"
+          aria-current={appView === 'lecture' ? 'page' : undefined}
+        >
+          <BookOpen size={20} className="vert-nav-icon" aria-hidden="true" />
+          <span className="vert-nav-label">Learning Studio</span>
+        </button>
+
+        <button
+          type="button"
+          className={`vert-nav-item ${appView === 'upload' ? 'active' : ''}`}
+          onClick={() => setAppView('upload')}
+          aria-label="Navigate to Ingest Video"
+          aria-current={appView === 'upload' ? 'page' : undefined}
+        >
+          <UploadCloud size={20} className="vert-nav-icon" aria-hidden="true" />
+          <span className="vert-nav-label">Ingest Video</span>
+        </button>
+      </aside>
+
+      {/* Main View Router */}
+      {appView === 'dashboard' ? (
+        <CareerOSDashboard 
+          onNavigateToLecture={(mode = 'lecture') => {
+            loadDemoLecture(mode);
+          }}
+          onNavigateToUpload={() => setAppView('upload')}
+          onLaunchRemediation={handleLaunchRemediation}
+          onSelectAccessibilityMode={(mode) => {
+            setAccessibilityMode(mode);
+            loadDemoLecture('lecture');
+          }}
+          hasActiveLecture={Boolean(lectureData)}
+        />
+      ) : appView === 'upload' ? (
         <main id="main-content">
           <UploadSection
             file={file}
             onFileChange={handleFileChange}
             onProcessLecture={processLecture}
-            onLoadDemo={loadDemoLecture}
+            onLoadDemo={() => loadDemoLecture('lecture')}
             status={status}
             errorMsg={errorMsg}
             onReset={handleReset}
           />
         </main>
+      ) : (
+        /* Lecture View (Deaf, Blind, Support, Quiz, Diagnosis) */
+        <div className="learning-workspace">
+          {status === 'success' && lectureData ? (
+            viewMode === 'quiz' ? (
+              <QuizPanel
+                lectureId={lectureData.lecture_id}
+                filename={lectureData.filename}
+                onReturnToLecture={() => setViewMode('lecture')}
+                onViewDiagnosis={(resData) => {
+                  setEvaluationResults(resData);
+                  setViewMode('diagnosis');
+                }}
+              />
+            ) : viewMode === 'diagnosis' ? (
+              <DiagnosisPanel
+                lectureId={lectureData.lecture_id}
+                filename={lectureData.filename}
+                evaluationResults={evaluationResults || DEFAULT_DEMO_EVALUATION}
+                onReturnToLecture={() => setViewMode('lecture')}
+                onReturnToQuiz={() => setViewMode('quiz')}
+              />
+            ) : (
+              <div className="learning-workspace-inner">
+                <LectureHeader
+                  filename={lectureData.filename || 'Lecture'}
+                  onReset={handleReset}
+                  onOpenQuiz={() => setViewMode('quiz')}
+                  accessibilityMode={accessibilityMode}
+                  onSelectMode={setAccessibilityMode}
+                  onNavigateDashboard={() => setAppView('dashboard')}
+                />
+
+                {accessibilityMode === 'blind' ? (
+                  <BlindModePanel
+                    lectureData={lectureData}
+                    onOpenQuiz={() => setViewMode('quiz')}
+                  />
+                ) : accessibilityMode === 'support' ? (
+                  <LearningSupportPanel
+                    lectureData={lectureData}
+                    onOpenQuiz={() => setViewMode('quiz')}
+                  />
+                ) : (
+                  <main className="learning-main" id="main-content">
+                    <div className="workspace-columns">
+                      <div className="column-captions">
+                        <CaptionPanel
+                          segments={lectureData.transcript || []}
+                          activeSegmentIndex={activeSegmentIndex}
+                          onSelectSegment={handleSelectSegment}
+                          insights={structuredInsights}
+                        />
+                      </div>
+
+                      <div className="column-insights">
+                        <InsightPanel
+                          insights={structuredInsights}
+                          activeInsightId={activeInsightId}
+                          onSelectInsight={handleSelectInsight}
+                        />
+                      </div>
+                    </div>
+
+                    <ConceptTimeline
+                      timelineItems={structuredInsights.filter(i => i.timestamp_start !== undefined)}
+                      activeInsightId={activeInsightId}
+                      onSelectTimelineItem={handleSelectInsight}
+                    />
+                  </main>
+                )}
+              </div>
+            )
+          ) : (
+            <main id="main-content">
+              <UploadSection
+                file={file}
+                onFileChange={handleFileChange}
+                onProcessLecture={processLecture}
+                onLoadDemo={() => loadDemoLecture('lecture')}
+                status={status}
+                errorMsg={errorMsg}
+                onReset={handleReset}
+              />
+            </main>
+          )}
+        </div>
       )}
     </div>
   );

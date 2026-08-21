@@ -16,11 +16,35 @@ import {
 const API_BASE_URL = 'http://localhost:8000';
 
 const PRESET_QUESTIONS = [
-  "What are the key concepts?",
-  "Explain Newton's Second Law simply.",
-  "What formula was taught?",
-  "What example did the teacher give?"
+  "What is the sliding window method?",
+  "How does the window sum update?",
+  "What is the time complexity of the update?",
+  "Can you give an example calculation?"
 ];
+
+/**
+ * Transforms algebraic and algorithmic expressions into clear spoken language for Text-to-Speech.
+ */
+function formatSpokenMathAndDSA(raw) {
+  if (!raw) return '';
+  return raw
+    .replace(/arr\[(\w+)\]/g, "array at index $1")
+    .replace(/arr\[0\]/g, "array at index zero")
+    .replace(/arr\[k\]/g, "array at index k")
+    .replace(/O\(1\)/gi, "O of 1 constant time")
+    .replace(/O\(n\)/gi, "O of N linear time")
+    .replace(/O\(N\)/g, "O of N linear time")
+    .replace(/O\(k\)/gi, "O of k time")
+    .replace(/new_sum\s*=\s*old_sum\s*\+\s*arr\[(\w+)\]\s*-\s*arr\[(\w+)\]/gi, "new sum equals old sum plus array at index $1 minus array at index $2")
+    .replace(/sum_new\s*=\s*sum_old\s*\+\s*arr\[(\w+)\]\s*-\s*arr\[(\w+)\]/gi, "new sum equals old sum plus array at index $1 minus array at index $2")
+    .replace(/k\s*-\s*1/g, "k minus 1")
+    .replace(/k\s*-\s*window_size/gi, "k minus window size")
+    .replace(/F\s*=\s*m\s*a/gi, "Force equals mass multiplied by acceleration")
+    .replace(/a\s*=\s*F\s*\/\s*m/gi, "acceleration equals force divided by mass")
+    .replace(/(\d+)\s*m\/s\^?2/gi, "$1 meters per second squared")
+    .replace(/(\d+)\s*kg/gi, "$1 kilograms")
+    .replace(/(\d+)\s*N\b/g, "$1 Newtons");
+}
 
 /**
  * Transforms StructuredLecture into natural spoken-language audio sections.
@@ -31,12 +55,12 @@ function buildAudioSections(lectureData) {
   const sections = [];
 
   // 1. Introduction
-  const title = lectureData.filename?.replace(/\.[^/.]+$/, "") || "Physics Lecture";
+  const title = lectureData.filename?.replace(/\.[^/.]+$/, "").replace(/_/g, " ") || "Technical Topic";
   sections.push({
     id: 'sec-intro',
     title: 'Introduction & Overview',
     type: 'intro',
-    spokenText: `Welcome to the audio lesson on ${title}. In this lecture, we will cover the fundamental concepts, definitions, mathematical formulas, and practical examples presented by the instructor.`,
+    spokenText: `Welcome to the audio lesson on ${title}. In this session, we will cover the core concepts, definitions, governing rules, and worked examples step-by-step.`,
     summary: `Overview of ${title}.`
   });
 
@@ -52,63 +76,56 @@ function buildAudioSections(lectureData) {
       id: 'sec-concepts',
       title: 'Key Concepts & Definitions',
       type: 'concept',
-      spokenText: conceptTexts || `The main concept in this lecture is ${title}.`,
+      spokenText: conceptTexts || `The main concept in this session is ${title}.`,
       summary: lectureData.concepts.map(c => c.name).join(', ')
     });
   }
 
-  // 3. Formulas
+  // 3. Formulas & State Transitions
   if (lectureData.formulas && lectureData.formulas.length > 0) {
     const formulaTexts = lectureData.formulas.map(f => {
-      let spokenEq = f.equation || '';
-      spokenEq = spokenEq
-        .replace(/F\s*=\s*m\s*a/gi, "Force equals mass multiplied by acceleration")
-        .replace(/a\s*=\s*F\s*\/\s*m/gi, "acceleration equals force divided by mass")
-        .replace(/m\/s\^?2/gi, "meters per second squared")
-        .replace(/N\b/g, "Newtons");
-
-      const vars = f.variables ? Object.entries(f.variables).map(([k, v]) => `${k} represents ${v}`).join(', ') : '';
-      return `Key formula: ${spokenEq}. ${vars ? `In this equation, ${vars}.` : ''} ${f.description || ''}`;
+      let spokenEq = formatSpokenMathAndDSA(f.expression || f.equation || f.name || '');
+      let vars = '';
+      if (f.variables) {
+        if (typeof f.variables === 'object' && !Array.isArray(f.variables)) {
+          vars = Object.entries(f.variables).map(([k, v]) => `${k} represents ${v}`).join(', ');
+        } else if (Array.isArray(f.variables)) {
+          vars = f.variables.map(v => typeof v === 'object' ? `${v.symbol || v.name} represents ${v.description || v.name}` : String(v)).join(', ');
+        }
+      }
+      return `Key rule or formula: ${spokenEq}. ${vars ? `In this equation, ${vars}.` : ''} ${f.description || ''}`;
     }).join(' ');
 
     sections.push({
       id: 'sec-formulas',
-      title: 'Mathematical Formulas',
+      title: 'Governing Rules & Formulas',
       type: 'formula',
       spokenText: formulaTexts,
-      summary: lectureData.formulas.map(f => f.equation).join(', ')
+      summary: lectureData.formulas.map(f => f.expression || f.equation || f.name).join(', ')
     });
   }
 
   // 4. Examples
   if (lectureData.examples && lectureData.examples.length > 0) {
     const exampleTexts = lectureData.examples.map(ex => {
-      let spokenScenario = ex.scenario || '';
-      spokenScenario = spokenScenario
-        .replace(/(\d+)\s*kg/gi, "$1 kilograms")
-        .replace(/(\d+)\s*N\b/gi, "$1 Newtons")
-        .replace(/(\d+)\s*m\/s\^?2/gi, "$1 meters per second squared");
+      let spokenScenario = formatSpokenMathAndDSA(ex.scenario || ex.topic || '');
+      let spokenResult = formatSpokenMathAndDSA(ex.result || '');
 
-      let spokenResult = ex.result || '';
-      spokenResult = spokenResult
-        .replace(/(\d+)\s*m\/s\^?2/gi, "$1 meters per second squared")
-        .replace(/(\d+)\s*N\b/gi, "$1 Newtons");
-
-      return `Practical example: ${spokenScenario}. Result: ${spokenResult}. ${ex.explanation || ''}`;
+      return `Practical example: ${spokenScenario}. ${spokenResult ? `Result: ${spokenResult}.` : ''} ${ex.explanation || ''}`;
     }).join(' ');
 
     sections.push({
       id: 'sec-examples',
-      title: 'Worked Examples & Calculations',
+      title: 'Worked Examples & Demonstrations',
       type: 'example',
       spokenText: exampleTexts,
-      summary: lectureData.examples.map(e => e.scenario).join(' | ')
+      summary: lectureData.examples.map(e => e.topic || e.scenario).join(' | ')
     });
   }
 
   // 5. Important Points & Takeaways
   if (lectureData.important_points && lectureData.important_points.length > 0) {
-    const pointsTexts = lectureData.important_points.map((p, i) => `Point ${i + 1}: ${p.text}.`).join(' ');
+    const pointsTexts = lectureData.important_points.map((p, i) => `Point ${i + 1}: ${formatSpokenMathAndDSA(p.point || p.text || '')}.`).join(' ');
     sections.push({
       id: 'sec-points',
       title: 'Important Points & Principles',
@@ -323,7 +340,7 @@ export default function BlindModePanel({
             <div className="player-header">
               <div className="mode-pill-audio">
                 <Headphones size={14} aria-hidden="true" />
-                <span>AUDIO-FIRST LESSON</span>
+                <span>AUDIO-FIRST INTELLIGENCE</span>
               </div>
               <span 
                 className="section-counter" 

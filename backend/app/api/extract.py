@@ -16,6 +16,15 @@ EXTRACTED_DIR.mkdir(parents=True, exist_ok=True)
 
 @router.post("/{lecture_id}/extract", response_model=StructuredLecture)
 def extract_lecture_content(lecture_id: str):
+    extracted_file = EXTRACTED_DIR / f"{lecture_id}.json"
+    if extracted_file.exists():
+        try:
+            with open(extracted_file, "r", encoding="utf-8") as f:
+                lecture_raw = json.load(f)
+            return StructuredLecture.model_validate(lecture_raw)
+        except Exception as e:
+            print(f"Warning: Failed to read cached extraction for {lecture_id}: {e}")
+
     transcript_file = TRANSCRIPTS_DIR / f"{lecture_id}.json"
     
     if not transcript_file.exists():

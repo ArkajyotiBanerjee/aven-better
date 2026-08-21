@@ -21,7 +21,7 @@ class QAService:
     def __init__(self):
         self.api_url = "https://api.groq.com/openai/v1/chat/completions"
         self.primary_model = os.getenv("GROQ_MODEL", "openai/gpt-oss-20b")
-        self.fallback_models = ["llama-3.3-70b-versatile", "llama-3.1-8b-instant"]
+        self.fallback_models = ["openai/gpt-oss-120b", "openai/gpt-oss-20b"]
 
     def _load_api_key(self) -> Optional[str]:
         key = os.getenv("GROQ_API_KEY")
@@ -69,12 +69,12 @@ class QAService:
         structured_context_json = json.dumps(lecture_summary, indent=2)
 
         system_prompt = (
-            "You are an accessible, audio-first educational assistant for the AccessLearn platform. "
+            "You are an accessible, audio-first educational assistant for the CareerOS Learning Intelligence platform. "
             "You answer student questions strictly and accurately based on the provided Structured Lecture.\n\n"
             "STRICT GROUNDING RULES:\n"
-            "1. Answer ONLY using the facts, definitions, formulas, and examples present in the Structured Lecture.\n"
-            "2. If the user asks about a topic not discussed in the lecture (e.g. quantum physics, biology, unrelated topics), politely state that this lecture does not cover that topic and briefly remind them of the lecture's actual topic.\n"
-            "3. Format explanations for spoken clarity: write clean, natural sentences that sound natural when read aloud by Text-to-Speech (e.g. write 'force equals mass multiplied by acceleration' or 'F equals m a').\n"
+            "1. Answer ONLY using the concepts, definitions, formulas/rules, and examples present in the Structured Lecture.\n"
+            "2. If the user asks about a topic not discussed in the material (e.g. unrelated topics, outside trivia), politely state that this session does not cover that topic and briefly remind them of the session's actual topic.\n"
+            "3. Format explanations for spoken clarity: write clean, natural sentences that sound natural when read aloud by Text-to-Speech (e.g. speak variables, equations, and code naturally).\n"
             "4. Keep explanations concise, clear, and focused (2 to 4 sentences).\n"
             "5. Cite the grounding sources (section name and timestamp if available).\n"
             "6. Respond ONLY with a valid JSON object matching the schema."

@@ -36,10 +36,10 @@ export default function InsightPanel({
     <section className="insight-panel" aria-labelledby="insights-heading">
       <div className="panel-header">
         <div className="panel-title-wrap">
-          <Sparkles size={18} className="panel-icon-svg text-accent" aria-hidden="true" />
-          <h2 id="insights-heading">AI Learning Insights</h2>
+          <Sparkles size={17} className="panel-icon-svg text-forest" aria-hidden="true" />
+          <h2 id="insights-heading">Extracted Technical Intelligence</h2>
         </div>
-        <span className="insight-count-badge" aria-label={`${insights.length} total educational events extracted`}>
+        <span className="insight-count-badge" aria-label={`${insights.length} extracted technical insights`}>
           {insights.length} Insights
         </span>
       </div>
@@ -52,7 +52,8 @@ export default function InsightPanel({
           className={`tab-btn ${filter === 'all' ? 'active' : ''}`}
           onClick={() => setFilter('all')}
         >
-          All <span className="tab-count">{counts.all}</span>
+          <span>All</span>
+          <span className="tab-count">{counts.all}</span>
         </button>
         {counts.concept > 0 && (
           <button
@@ -61,7 +62,7 @@ export default function InsightPanel({
             className={`tab-btn ${filter === 'concept' ? 'active' : ''}`}
             onClick={() => setFilter('concept')}
           >
-            <BookOpen size={14} aria-hidden="true" />
+            <BookOpen size={13} aria-hidden="true" />
             <span>Concepts</span>
             <span className="tab-count">{counts.concept}</span>
           </button>
@@ -73,7 +74,7 @@ export default function InsightPanel({
             className={`tab-btn ${filter === 'formula' ? 'active' : ''}`}
             onClick={() => setFilter('formula')}
           >
-            <Binary size={14} aria-hidden="true" />
+            <Binary size={13} aria-hidden="true" />
             <span>Formulas</span>
             <span className="tab-count">{counts.formula}</span>
           </button>
@@ -85,7 +86,7 @@ export default function InsightPanel({
             className={`tab-btn ${filter === 'example' ? 'active' : ''}`}
             onClick={() => setFilter('example')}
           >
-            <Lightbulb size={14} aria-hidden="true" />
+            <Lightbulb size={13} aria-hidden="true" />
             <span>Examples</span>
             <span className="tab-count">{counts.example}</span>
           </button>
@@ -97,8 +98,8 @@ export default function InsightPanel({
             className={`tab-btn ${filter === 'important_point' ? 'active' : ''}`}
             onClick={() => setFilter('important_point')}
           >
-            <AlertTriangle size={14} aria-hidden="true" />
-            <span>Important</span>
+            <AlertTriangle size={13} aria-hidden="true" />
+            <span>Key Points</span>
             <span className="tab-count">{counts.important_point}</span>
           </button>
         )}
@@ -109,7 +110,7 @@ export default function InsightPanel({
             className={`tab-btn ${filter === 'relationship' ? 'active' : ''}`}
             onClick={() => setFilter('relationship')}
           >
-            <Link2 size={14} aria-hidden="true" />
+            <Link2 size={13} aria-hidden="true" />
             <span>Relations</span>
             <span className="tab-count">{counts.relationship}</span>
           </button>

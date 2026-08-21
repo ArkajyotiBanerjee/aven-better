@@ -15,17 +15,17 @@ function getCategoryIcon(type) {
   switch (type) {
     case 'concept':
     case 'definition':
-      return <BookOpen size={14} aria-hidden="true" />;
+      return <BookOpen size={13} aria-hidden="true" />;
     case 'formula':
-      return <Binary size={14} aria-hidden="true" />;
+      return <Binary size={13} aria-hidden="true" />;
     case 'example':
-      return <Lightbulb size={14} aria-hidden="true" />;
+      return <Lightbulb size={13} aria-hidden="true" />;
     case 'important_point':
-      return <AlertTriangle size={14} aria-hidden="true" />;
+      return <AlertTriangle size={13} aria-hidden="true" />;
     case 'relationship':
-      return <Link2 size={14} aria-hidden="true" />;
+      return <Link2 size={13} aria-hidden="true" />;
     default:
-      return <BookOpen size={14} aria-hidden="true" />;
+      return <BookOpen size={13} aria-hidden="true" />;
   }
 }
 
@@ -70,7 +70,7 @@ export default function InsightCard({
         
         {timestamp_start !== undefined && (
           <span className="insight-timestamp" title="Jump to timestamp in captions">
-            <Clock size={12} className="clock-svg-inline" aria-hidden="true" />
+            <Clock size={11} className="clock-svg-inline" aria-hidden="true" />
             <span>{formatTime(timestamp_start)}</span>
             {timestamp_end && timestamp_end !== timestamp_start ? ` – ${formatTime(timestamp_end)}` : ''}
           </span>
@@ -118,7 +118,7 @@ export default function InsightCard({
             </div>
             {data.result && (
               <div className="example-result">
-                <span className="result-label">Result:</span>
+                <span className="result-label">Outcome:</span>
                 <span className="result-value">{data.result}</span>
               </div>
             )}
@@ -140,7 +140,7 @@ export default function InsightCard({
               <span className="relation-node source-node">{data.source}</span>
               <span className="relation-arrow">
                 <span className="relation-type">{data.relationship}</span>
-                <ArrowRight size={14} className="arrow-symbol" aria-hidden="true" />
+                <ArrowRight size={13} className="arrow-symbol" aria-hidden="true" />
               </span>
               <span className="relation-node target-node">{data.target}</span>
             </div>
@@ -150,7 +150,7 @@ export default function InsightCard({
         {/* Evidence Quote */}
         {evidence && (
           <div className="insight-evidence" title="Direct ground from transcript">
-            <Quote size={14} className="evidence-icon-svg" aria-hidden="true" />
+            <Quote size={13} className="evidence-icon-svg" aria-hidden="true" />
             <blockquote className="evidence-quote">{evidence}</blockquote>
           </div>
         )}

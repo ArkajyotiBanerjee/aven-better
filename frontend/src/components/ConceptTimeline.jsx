@@ -1,5 +1,5 @@
 import React from 'react';
-import { MapPin } from 'lucide-react';
+import { Compass } from 'lucide-react';
 import { formatTime } from './CaptionPanel';
 
 export default function ConceptTimeline({
@@ -20,10 +20,10 @@ export default function ConceptTimeline({
     <nav className="concept-timeline-section" aria-labelledby="timeline-heading">
       <div className="timeline-header">
         <div className="timeline-title-wrap">
-          <MapPin size={18} className="timeline-icon-svg text-accent" aria-hidden="true" />
-          <h2 id="timeline-heading">Lecture Progression Timeline</h2>
+          <Compass size={16} className="timeline-icon-svg text-forest" aria-hidden="true" />
+          <h2 id="timeline-heading">Lecture Progression Rail</h2>
         </div>
-        <span className="timeline-hint">Click a milestone to jump to that moment in the lecture</span>
+        <span className="timeline-hint">Select any concept milestone to jump to that moment in the lecture</span>
       </div>
 
       <div className="timeline-track-container" tabIndex="0" role="region" aria-label="Chronological concept timeline">

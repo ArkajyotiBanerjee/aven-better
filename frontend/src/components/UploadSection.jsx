@@ -30,15 +30,15 @@ export default function UploadSection({
         <div className="upload-hero">
           <div className="hero-badge">
             <Sparkles size={14} className="hero-badge-icon" aria-hidden="true" />
-            <span>AI Multi-Modal Accessibility Platform</span>
+            <span>CareerOS Multi-Modal Learning Studio</span>
           </div>
 
           <h1 id="upload-heading" className="hero-title">
-            Transform Any Lecture Into Accessible Understanding
+            Transform Technical Lectures Into Deep Understanding
           </h1>
 
           <p className="hero-subtitle">
-            Upload any lecture video to automatically generate personalized learning experiences tailored for Deaf, Blind, and Learning Support students.
+            Upload any technical or placement video to automatically generate accessible learning pathways, step-by-step conceptual breakdowns, adaptive quizzes, and diagnostic remediation.
           </p>
 
           {/* 3 Core Accessibility Pathways */}
@@ -156,7 +156,7 @@ export default function UploadSection({
                     <FlaskConical size={22} />
                   </span>
                   <div className="demo-text">
-                    <strong>Load Demo: Newton's Second Law Lecture</strong>
+                    <strong>Load Demo: Sliding Window Algorithm (DSA Benchmark)</strong>
                     <small>Pre-extracted multi-modal experience ready for demo</small>
                   </div>
                   <ArrowRight size={18} className="demo-arrow" aria-hidden="true" />

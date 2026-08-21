@@ -25,7 +25,7 @@ class ExtractionService:
         self.api_url = "https://api.groq.com/openai/v1/chat/completions"
         self.primary_model = os.getenv("GROQ_MODEL", "openai/gpt-oss-20b")
         # Fallback model in case the primary encounters temporary JSON schema validation issues on Groq
-        self.fallback_models = ["llama-3.3-70b-versatile", "llama-3.1-8b-instant"]
+        self.fallback_models = ["openai/gpt-oss-120b", "openai/gpt-oss-20b"]
 
     def _load_api_key(self) -> Optional[str]:
         # Check environment first

@@ -22,7 +22,7 @@ class QuizService:
     def __init__(self):
         self.api_url = "https://api.groq.com/openai/v1/chat/completions"
         self.primary_model = os.getenv("GROQ_MODEL", "openai/gpt-oss-20b")
-        self.fallback_models = ["llama-3.3-70b-versatile", "llama-3.1-8b-instant"]
+        self.fallback_models = ["openai/gpt-oss-120b", "openai/gpt-oss-20b"]
 
     def _load_api_key(self) -> Optional[str]:
         key = os.getenv("GROQ_API_KEY")
@@ -76,20 +76,20 @@ class QuizService:
             "Mandatory Rules:\n"
             "1. Output exactly 5 questions (q1, q2, q3, q4, q5).\n"
             "2. Ensure a balanced pedagogical distribution:\n"
-            "   - Question 1 (recall): Definition / core statement of the concept\n"
-            "   - Question 2 (comprehension): Formula structure and meaning of variables\n"
-            "   - Question 3 (application): Numerical calculation using the formula/example taught in the lecture\n"
-            "   - Question 4 (comprehension/relation): Relationship between the variables (e.g. what happens if force doubles?)\n"
-            "   - Question 5 (application): Scenario-based application question testing problem-solving\n"
-            "3. Ground all questions directly in the lecture. Do not invent external physics facts.\n"
+            "   - Question 1 (recall): Core definition or foundational concept statement\n"
+            "   - Question 2 (comprehension): Key formula, notation, variable meaning, or rule structure\n"
+            "   - Question 3 (application): Concrete calculation or problem-solving application using the rules/formulas taught\n"
+            "   - Question 4 (comprehension/relation): Relationships between components (e.g. how changing one parameter impacts the result or state)\n"
+            "   - Question 5 (application): Scenario-based problem-solving question testing practical application\n"
+            "3. Ground all questions directly in the provided material. Do not invent external unsupported facts.\n"
             "4. Each question must have exactly 4 distinct plausible options.\n"
             "5. 'correct_answer' must be the exact string of the correct option.\n"
-            "6. 'explanation' must explain why the answer is correct referencing the lecture.\n"
+            "6. 'explanation' must explain why the answer is correct referencing the material.\n"
             "7. Diagnostic metadata per question:\n"
             "   - 'concept': Name of the concept tested\n"
             "   - 'skill': 'recall' | 'comprehension' | 'application'\n"
             "   - 'difficulty': 'easy' | 'medium' | 'hard'\n"
-            "   - 'source_timestamp': float timestamp in seconds where covered in lecture\n"
+            "   - 'source_timestamp': float timestamp in seconds where covered in the material\n"
             "8. Respond ONLY with a valid JSON object matching the required schema."
         )
 
@@ -162,6 +162,8 @@ class QuizService:
                 detail="Failed to generate structured quiz from lecture"
             )
 
+        default_concept_name = lecture_data.concepts[0].name if lecture_data.concepts else "Core Concept"
+
         # Process, validate, and safely randomize options for each question
         processed_questions: List[Question] = []
         for i, q in enumerate(raw_quiz_data.get("questions", [])):
@@ -184,7 +186,7 @@ class QuizService:
                 options=shuffled_options,
                 correct_answer=correct_ans,
                 explanation=q.get("explanation", "Grounded in lecture content."),
-                concept=q.get("concept", "Newton's Second Law"),
+                concept=q.get("concept") or default_concept_name,
                 skill=q.get("skill", "comprehension") if q.get("skill") in ["recall", "comprehension", "application"] else "comprehension",
                 difficulty=q.get("difficulty", "medium") if q.get("difficulty") in ["easy", "medium", "hard"] else "medium",
                 source_timestamp=q.get("source_timestamp")

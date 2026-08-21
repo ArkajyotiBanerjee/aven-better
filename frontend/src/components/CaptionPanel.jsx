@@ -38,10 +38,10 @@ export default function CaptionPanel({
     <section className="caption-panel" aria-labelledby="captions-heading">
       <div className="panel-header">
         <div className="panel-title-wrap">
-          <MessageSquare size={18} className="panel-icon-svg" aria-hidden="true" />
-          <h2 id="captions-heading">Live-Style Captions</h2>
+          <MessageSquare size={17} className="panel-icon-svg" aria-hidden="true" />
+          <h2 id="captions-heading">Synchronized Transcript & Captions</h2>
         </div>
-        <span className="segment-count-badge" aria-label={`${segments.length} transcript segments`}>
+        <span className="segment-count-badge" aria-label={`${segments.length} timestamped transcript segments`}>
           {segments.length} Segments
         </span>
       </div>
@@ -75,7 +75,7 @@ export default function CaptionPanel({
             >
               <div className="caption-meta">
                 <span className="caption-timestamp">
-                  <Clock size={13} className="clock-icon-svg" aria-hidden="true" />
+                  <Clock size={12} className="clock-icon-svg" aria-hidden="true" />
                   <span>{formatTime(seg.start)} – {formatTime(seg.end)}</span>
                 </span>
                 {relatedInsights.length > 0 && (

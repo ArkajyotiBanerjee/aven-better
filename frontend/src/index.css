@@ -1,55 +1,73 @@
 :root {
-  --bg-main: #0b0f19;
-  --bg-surface: #111827;
-  --bg-surface-elevated: #1e293b;
-  --bg-surface-subtle: #172033;
-  --border-color: #334155;
-  --border-subtle: #1e293b;
+  /* Aven.better Primary Editorial Palette */
+  --bg-main: #F7F5EF;              /* Soft Ivory canvas */
+  --bg-surface: #FFFFFF;           /* Pure white card surface */
+  --bg-surface-elevated: #EFECE4;  /* Sand-tinted elevated surface */
+  --bg-surface-subtle: #F0EDE5;    /* Subtle tinted container */
+  --bg-forest: #234C38;            /* Deep Forest */
+  --bg-forest-hover: #1B3B2B;      /* Deep Forest Hover */
+  --bg-botanical: #DDE8DE;         /* Soft Botanical tint */
+  --bg-botanical-subtle: #EAF0EB;   /* Pale botanical wash */
 
-  --text-primary: #f8fafc;
-  --text-secondary: #cbd5e1;
-  --text-muted: #94a3b8;
-  --text-inverse: #0f172a;
+  /* Borders & Dividers */
+  --border-color: #E2DDD3;         /* Warm editorial divider */
+  --border-subtle: #ECE8E0;        /* Very light separator */
+  --border-forest: rgba(35, 76, 56, 0.18); /* Forest structural border */
+  --border-botanical: #CBDCCE;     /* Botanical accent border */
 
-  --primary-accent: #38bdf8;
-  --primary-accent-bg: rgba(56, 189, 248, 0.12);
-  --primary-accent-border: rgba(56, 189, 248, 0.4);
+  /* Text & Ink */
+  --text-primary: #172019;         /* High-contrast Ink */
+  --text-secondary: #3B4D40;       /* Deep botanical charcoal */
+  --text-muted: #6B7D70;           /* Soft sage slate */
+  --text-inverse: #F7F5EF;         /* Ivory on forest buttons */
+  --text-forest: #234C38;          /* Deep Forest text */
 
-  /* Educational Category Colors */
-  --cat-concept: #06b6d4;
-  --cat-concept-bg: rgba(6, 182, 212, 0.12);
-  --cat-concept-border: rgba(6, 182, 212, 0.4);
+  /* Primary Brand Accent */
+  --primary-accent: #234C38;       /* Deep Forest primary */
+  --primary-accent-bg: #DDE8DE;    /* Soft Botanical pill background */
+  --primary-accent-border: #BCD0BF;/* Botanical border */
 
-  --cat-definition: #3b82f6;
-  --cat-definition-bg: rgba(59, 130, 246, 0.12);
-  --cat-definition-border: rgba(59, 130, 246, 0.4);
+  /* Restrained Semantic & Category Tones */
+  --cat-concept: #234C38;
+  --cat-concept-bg: #E3EBE4;
+  --cat-concept-border: #C5D8C7;
 
-  --cat-formula: #a855f7;
-  --cat-formula-bg: rgba(168, 85, 247, 0.12);
-  --cat-formula-border: rgba(168, 85, 247, 0.4);
+  --cat-definition: #2D587B;
+  --cat-definition-bg: #E2ECF3;
+  --cat-definition-border: #BCD1E2;
 
-  --cat-example: #10b981;
-  --cat-example-bg: rgba(16, 185, 129, 0.12);
-  --cat-example-border: rgba(16, 185, 129, 0.4);
+  --cat-formula: #5B4278;
+  --cat-formula-bg: #EFE9F5;
+  --cat-formula-border: #D5C8E4;
 
-  --cat-important: #f59e0b;
-  --cat-important-bg: rgba(245, 158, 11, 0.12);
-  --cat-important-border: rgba(245, 158, 11, 0.4);
+  --cat-example: #295F48;
+  --cat-example-bg: #E3EDE7;
+  --cat-example-border: #BFDACB;
 
-  --cat-relationship: #ec4899;
-  --cat-relationship-bg: rgba(236, 72, 153, 0.12);
-  --cat-relationship-border: rgba(236, 72, 153, 0.4);
+  --cat-important: #945B26;
+  --cat-important-bg: #F8EFE5;
+  --cat-important-border: #E8D3BF;
 
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.2);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -2px rgba(0, 0, 0, 0.3);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -4px rgba(0, 0, 0, 0.4);
+  --cat-relationship: #8C3A5A;
+  --cat-relationship-bg: #F7E9EF;
+  --cat-relationship-border: #E5C3D1;
 
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 14px;
-  --radius-full: 9999px;
+  /* Shadows (Subtle, refined, non-muddy) */
+  --shadow-sm: 0 1px 2px 0 rgba(23, 32, 25, 0.04);
+  --shadow-md: 0 4px 12px -2px rgba(23, 32, 25, 0.06), 0 2px 4px -2px rgba(23, 32, 25, 0.03);
+  --shadow-lg: 0 12px 24px -4px rgba(23, 32, 25, 0.08), 0 4px 8px -2px rgba(23, 32, 25, 0.03);
+  --shadow-glass: 0 10px 30px -5px rgba(23, 32, 25, 0.06), 0 2px 6px -1px rgba(23, 32, 25, 0.03);
 
-  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  /* Purpose-Driven Shape & Geometry */
+  --radius-sm: 4px;                /* Technical tags & code chips */
+  --radius-md: 8px;                /* Controls, buttons, input fields */
+  --radius-lg: 12px;               /* Major editorial cards */
+  --radius-xl: 18px;               /* Translucent hero glass surface */
+  --radius-full: 9999px;           /* Category status pills */
+
+  /* Typography System */
+  --font-display: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-sans: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
@@ -63,7 +81,7 @@ body {
   background-color: var(--bg-main);
   color: var(--text-primary);
   font-family: var(--font-sans);
-  font-size: 16px;
+  font-size: 15px;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -75,9 +93,17 @@ body {
   flex-direction: column;
 }
 
-/* Accessibility Focus Ring */
+/* Headings inherit Poppins */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  color: var(--text-primary);
+  letter-spacing: -0.015em;
+  font-weight: 600;
+}
+
+/* Accessibility Focus Ring (High contrast Forest green) */
 :focus-visible {
-  outline: 2px solid var(--primary-accent);
+  outline: 2px solid var(--bg-forest);
   outline-offset: 2px;
 }
 
@@ -96,18 +122,18 @@ body {
 
 /* Buttons Base */
 button {
-  font-family: inherit;
-  font-size: 1rem;
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
   cursor: pointer;
   border: none;
   background: none;
-  transition: all 0.2s ease;
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Scrollbars */
+/* Editorial Scrollbars */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
 }
 
 ::-webkit-scrollbar-track {
@@ -115,10 +141,10 @@ button {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--border-color);
+  background: #D5CEBF;
   border-radius: var(--radius-full);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--text-muted);
+  background: #B5AC9B;
 }
