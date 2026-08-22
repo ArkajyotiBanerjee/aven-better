@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
-import { LayoutDashboard, BookOpen, UploadCloud, Sparkles } from 'lucide-react';
+import { LayoutDashboard, BookOpen, UploadCloud, Sparkles, FileText, Loader2 } from 'lucide-react';
 import LectureHeader from './components/LectureHeader';
 import CaptionPanel from './components/CaptionPanel';
 import InsightPanel from './components/InsightPanel';
@@ -12,6 +12,7 @@ import LearningSupportPanel from './components/LearningSupportPanel';
 import CareerOSDashboard from './components/dashboard/CareerOSDashboard';
 import GoogleAuthButton from './components/GoogleAuthButton';
 import AIInterview from './components/interview/AIInterview';
+import ResumeIntelligence from './components/resume/ResumeIntelligence';
 import './App.css';
 
 const API_BASE_URL = '';
@@ -151,12 +152,17 @@ function App() {
   };
 
   const handleNavigateToUpload = () => {
-    // If not actively processing an upload, ensure clean state for fresh ingest
-    if (status !== 'uploading' && status !== 'transcribing' && status !== 'extracting') {
-      setStatus('idle');
-      setErrorMsg('');
-    }
     setAppView('upload');
+  };
+
+  const handleNavigateToStudio = async (targetMode = 'lecture') => {
+    setViewMode(targetMode);
+    setAppView('lecture');
+    if (!lectureData) {
+      await loadDemoLecture(targetMode);
+    } else {
+      setStatus('success');
+    }
   };
 
   // Convert StructuredLecture payload into a normalized, categorized insights list
@@ -450,13 +456,7 @@ function App() {
         <button
           type="button"
           className={`vert-nav-item ${appView === 'lecture' ? 'active' : ''}`}
-          onClick={() => {
-            if (lectureData) {
-              setAppView('lecture');
-            } else {
-              loadDemoLecture('lecture');
-            }
-          }}
+          onClick={() => handleNavigateToStudio('lecture')}
           aria-label="Navigate to Learning Studio"
           aria-current={appView === 'lecture' ? 'page' : undefined}
         >
@@ -477,6 +477,17 @@ function App() {
 
         <button
           type="button"
+          className={`vert-nav-item ${appView === 'resume' ? 'active' : ''}`}
+          onClick={() => setAppView('resume')}
+          aria-label="Navigate to Resume Intelligence"
+          aria-current={appView === 'resume' ? 'page' : undefined}
+        >
+          <FileText size={20} className="vert-nav-icon" aria-hidden="true" />
+          <span className="vert-nav-label">Resume Intelligence</span>
+        </button>
+
+        <button
+          type="button"
           className={`vert-nav-item ${appView === 'upload' ? 'active' : ''}`}
           onClick={handleNavigateToUpload}
           aria-label="Navigate to Ingest Video"
@@ -491,14 +502,14 @@ function App() {
       {appView === 'dashboard' ? (
         <CareerOSDashboard 
           onNavigateToLecture={(mode = 'lecture') => {
-            loadDemoLecture(mode);
+            handleNavigateToStudio(mode);
           }}
           onNavigateToUpload={handleNavigateToUpload}
           onNavigateToInterview={() => setAppView('interview')}
           onLaunchRemediation={handleLaunchRemediation}
           onSelectAccessibilityMode={(mode) => {
             setAccessibilityMode(mode);
-            loadDemoLecture('lecture');
+            handleNavigateToStudio('lecture');
           }}
           hasActiveLecture={Boolean(lectureData)}
           user={user}
@@ -506,6 +517,13 @@ function App() {
       ) : appView === 'interview' ? (
         <main id="main-content">
           <AIInterview
+            onNavigateDashboard={() => setAppView('dashboard')}
+            user={user}
+          />
+        </main>
+      ) : appView === 'resume' ? (
+        <main id="main-content">
+          <ResumeIntelligence
             onNavigateDashboard={() => setAppView('dashboard')}
             user={user}
           />
@@ -525,7 +543,7 @@ function App() {
       ) : (
         /* Lecture View (Deaf, Blind, Support, Quiz, Diagnosis) */
         <div className="learning-workspace">
-          {status === 'success' && lectureData ? (
+          {lectureData ? (
             viewMode === 'quiz' ? (
               <QuizPanel
                 lectureId={lectureData.lecture_id}
@@ -609,16 +627,12 @@ function App() {
               </div>
             )
           ) : (
-            <main id="main-content">
-              <UploadSection
-                file={file}
-                onFileChange={handleFileChange}
-                onProcessLecture={processLecture}
-                onLoadDemo={() => loadDemoLecture('lecture')}
-                status={status}
-                errorMsg={errorMsg}
-                onReset={handleReset}
-              />
+            <main id="main-content" style={{ padding: '4rem 1.5rem', textAlign: 'center', minHeight: 'calc(100vh - 120px)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <div className="dashboard-loading-state" role="status" style={{ maxWidth: '580px', width: '100%', margin: '0 auto' }}>
+                <Loader2 size={36} className="animated-spinner" aria-hidden="true" style={{ color: 'var(--bg-forest)', margin: '0 auto 1.25rem auto' }} />
+                <h2 className="loading-title">Loading Learning Studio...</h2>
+                <p className="loading-desc">Preparing multi-modal lecture, timestamped captions, and intelligence extraction.</p>
+              </div>
             </main>
           )}
         </div>
