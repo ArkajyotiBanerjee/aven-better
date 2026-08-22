@@ -1,5 +1,5 @@
-import { useState, useMemo, useEffect } from 'react';
-import { LayoutDashboard, BookOpen, UploadCloud } from 'lucide-react';
+import { useState, useMemo, useEffect, useRef } from 'react';
+import { LayoutDashboard, BookOpen, UploadCloud, Sparkles } from 'lucide-react';
 import LectureHeader from './components/LectureHeader';
 import CaptionPanel from './components/CaptionPanel';
 import InsightPanel from './components/InsightPanel';
@@ -11,6 +11,7 @@ import BlindModePanel from './components/BlindModePanel';
 import LearningSupportPanel from './components/LearningSupportPanel';
 import CareerOSDashboard from './components/dashboard/CareerOSDashboard';
 import GoogleAuthButton from './components/GoogleAuthButton';
+import AIInterview from './components/interview/AIInterview';
 import './App.css';
 
 const API_BASE_URL = '';
@@ -147,6 +148,15 @@ function App() {
     setAppView('upload');
     setActiveSegmentIndex(null);
     setActiveInsightId(null);
+  };
+
+  const handleNavigateToUpload = () => {
+    // If not actively processing an upload, ensure clean state for fresh ingest
+    if (status !== 'uploading' && status !== 'transcribing' && status !== 'extracting') {
+      setStatus('idle');
+      setErrorMsg('');
+    }
+    setAppView('upload');
   };
 
   // Convert StructuredLecture payload into a normalized, categorized insights list
@@ -371,8 +381,40 @@ function App() {
     }
   };
 
+  // Subtle slower-scrolling parallax for decorative doodle background
+  const doodleBgRef = useRef(null);
+
+  useEffect(() => {
+    let ticking = false;
+    const handleScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          if (doodleBgRef.current) {
+            const scrollY = window.scrollY || window.pageYOffset || 0;
+            // Slower vertical parallax displacement (approx 28% scroll speed)
+            doodleBgRef.current.style.transform = `translate3d(-50%, ${-scrollY * 0.28}px, 0)`;
+          }
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
   return (
     <div className="accesslearn-app">
+      {/* Decorative Slower-Scrolling Parallax Doodle Background Layer */}
+      <div className="doodle-bg-layer" aria-hidden="true">
+        <div ref={doodleBgRef} className="doodle-bg-canvas" />
+      </div>
+
       {/* Top Application Global Brand Header */}
       <header className="global-app-nav" aria-label="Aven.better header">
         <div className="nav-container">
@@ -424,8 +466,19 @@ function App() {
 
         <button
           type="button"
+          className={`vert-nav-item ${appView === 'interview' ? 'active' : ''}`}
+          onClick={() => setAppView('interview')}
+          aria-label="Navigate to AI Interview"
+          aria-current={appView === 'interview' ? 'page' : undefined}
+        >
+          <Sparkles size={20} className="vert-nav-icon" aria-hidden="true" />
+          <span className="vert-nav-label">AI Interview</span>
+        </button>
+
+        <button
+          type="button"
           className={`vert-nav-item ${appView === 'upload' ? 'active' : ''}`}
-          onClick={() => setAppView('upload')}
+          onClick={handleNavigateToUpload}
           aria-label="Navigate to Ingest Video"
           aria-current={appView === 'upload' ? 'page' : undefined}
         >
@@ -440,7 +493,8 @@ function App() {
           onNavigateToLecture={(mode = 'lecture') => {
             loadDemoLecture(mode);
           }}
-          onNavigateToUpload={() => setAppView('upload')}
+          onNavigateToUpload={handleNavigateToUpload}
+          onNavigateToInterview={() => setAppView('interview')}
           onLaunchRemediation={handleLaunchRemediation}
           onSelectAccessibilityMode={(mode) => {
             setAccessibilityMode(mode);
@@ -449,6 +503,13 @@ function App() {
           hasActiveLecture={Boolean(lectureData)}
           user={user}
         />
+      ) : appView === 'interview' ? (
+        <main id="main-content">
+          <AIInterview
+            onNavigateDashboard={() => setAppView('dashboard')}
+            user={user}
+          />
+        </main>
       ) : appView === 'upload' ? (
         <main id="main-content">
           <UploadSection

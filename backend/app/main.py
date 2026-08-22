@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api import upload, extract, quiz, diagnosis, qa, dashboard, auth, progress
+from app.api import upload, extract, quiz, diagnosis, qa, dashboard, auth, progress, interview
 
 app = FastAPI(title="AccessLearn API")
 
@@ -26,6 +26,7 @@ app.add_middleware(
 
 app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
 app.include_router(progress.router, prefix="/api/user/progress", tags=["progress"])
+app.include_router(interview.router, prefix="/api/interview", tags=["interview"])
 app.include_router(upload.router, prefix="/api/lectures", tags=["lectures"])
 app.include_router(extract.router, prefix="/api/lectures", tags=["lectures"])
 app.include_router(quiz.router, prefix="/api/lectures", tags=["lectures"])

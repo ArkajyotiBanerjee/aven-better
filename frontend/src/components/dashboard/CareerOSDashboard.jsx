@@ -22,6 +22,7 @@ const API_BASE_URL = '';
 export default function CareerOSDashboard({
   onNavigateToLecture,
   onNavigateToUpload,
+  onNavigateToInterview,
   onLaunchRemediation,
   onSelectAccessibilityMode,
   hasActiveLecture = false,

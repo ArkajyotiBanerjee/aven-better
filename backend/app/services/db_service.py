@@ -84,6 +84,22 @@ class DatabaseService:
                 FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
             );
             """)
+
+            # Interview Results Table
+            cursor.execute("""
+            CREATE TABLE IF NOT EXISTS interview_results (
+                id TEXT PRIMARY KEY,
+                user_id TEXT NOT NULL,
+                topic TEXT NOT NULL,
+                difficulty TEXT NOT NULL,
+                overall_score REAL NOT NULL,
+                evaluation_json TEXT NOT NULL,
+                rounds_count INTEGER NOT NULL,
+                created_at TEXT NOT NULL,
+                FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+            );
+            """)
             
             cursor.execute("CREATE INDEX IF NOT EXISTS idx_sessions_user_id ON user_sessions(user_id);")
             cursor.execute("CREATE INDEX IF NOT EXISTS idx_progress_user_id ON learner_progress(user_id);")
+            cursor.execute("CREATE INDEX IF NOT EXISTS idx_interview_user_id ON interview_results(user_id);")
