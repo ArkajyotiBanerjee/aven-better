@@ -6,8 +6,6 @@ __pycache__/
 *$py.class
 
 # Environment & Secrets
-.env
-.env.*
 !.env.example
 
 # Frontend
@@ -41,7 +39,7 @@ backend/lecture1.mp4
 *.mov
 
 # IDE / System
-.vscode/
 .idea/
 .DS_Store
 Thumbs.db
+config.bat
