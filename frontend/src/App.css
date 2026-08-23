@@ -7592,6 +7592,828 @@
   }
 }
 
+/* ==========================================================================
+   AI INTERVIEW 2.0 — RESUME GROUNDING & PREFLIGHT STYLES
+   ========================================================================== */
+
+/* Resume Upload Section in Setup */
+.interview-resume-dropzone {
+  border: 2px dashed #D5CEBF;
+  border-radius: var(--radius-lg);
+  background-color: #FAF8F4;
+  padding: 1.75rem 1.5rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.interview-resume-dropzone:hover,
+.interview-resume-dropzone.drag-active {
+  border-color: var(--bg-forest);
+  background-color: #F4F8F5;
+  transform: translateY(-2px);
+}
+
+.interview-selected-resume-card {
+  border: 1.5px solid #CFE2D4;
+  background-color: #F4F8F5;
+  border-radius: var(--radius-md);
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.resume-card-left {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.resume-icon-forest {
+  color: var(--bg-forest);
+  flex-shrink: 0;
+}
+
+.resume-card-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.resume-filename {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  word-break: break-all;
+}
+
+.resume-filesize {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+
+.btn-text-remove-resume {
+  background: transparent;
+  border: none;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #8C423B;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+}
+
+.btn-text-remove-resume:hover {
+  opacity: 0.8;
+}
+
+.role-selector-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.custom-role-input-wrap {
+  margin-top: 0.25rem;
+}
+
+/* Preflight Wrapper & Container */
+.interview-preflight-wrapper {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 1rem 0 3rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+.preflight-header {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.preflight-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--bg-forest);
+  background-color: #EBF3ED;
+  border: 1px solid #CFE2D4;
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--radius-full);
+}
+
+.preflight-title {
+  font-size: 2.15rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.03em;
+  margin: 0;
+}
+
+.preflight-sub {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  max-width: 600px;
+  margin: 0;
+}
+
+/* Grounding Banner */
+.preflight-grounding-banner {
+  background-color: #FFFFFF;
+  border: 1px solid #E5E0D5;
+  border-radius: var(--radius-md);
+  padding: 0.85rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.75rem;
+  flex-wrap: wrap;
+  box-shadow: 0 2px 10px rgba(35, 76, 56, 0.04);
+}
+
+.grounding-item {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.86rem;
+  color: var(--text-secondary);
+}
+
+.grounding-icon {
+  color: var(--bg-forest);
+}
+
+.grounding-item strong {
+  color: var(--text-primary);
+}
+
+/* Preflight Main Card */
+.preflight-main-card {
+  background: #FFFFFF;
+  border: 1px solid #E5E0D5;
+  border-radius: var(--radius-xl);
+  padding: 2rem;
+  box-shadow: 0 6px 24px rgba(35, 76, 56, 0.06);
+}
+
+.preflight-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: 2.25rem;
+  align-items: center;
+}
+
+/* Camera Preview Pane */
+.camera-preview-pane {
+  display: flex;
+  flex-direction: column;
+}
+
+.camera-frame-box {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background-color: #1A261F;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 2px solid #D8D2C4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.camera-video-feed {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scaleX(-1); /* Mirror view for natural candidate feedback */
+}
+
+.camera-offline-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  color: #9AA89E;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.icon-offline {
+  color: #728477;
+}
+
+.camera-live-pill {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: rgba(18, 28, 22, 0.85);
+  backdrop-filter: blur(6px);
+  color: #FFFFFF;
+  font-size: 0.75rem;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  padding: 0.3rem 0.65rem;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.live-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.dot-green {
+  background-color: #2ED573;
+  box-shadow: 0 0 8px rgba(46, 213, 115, 0.8);
+}
+
+.dot-red {
+  background-color: #FF4757;
+}
+
+/* Status Checklist Pane */
+.preflight-status-pane {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.status-pane-heading {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.status-checklist {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.status-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+  padding: 0.95rem 1.15rem;
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+}
+
+.status-pass {
+  background-color: #F2F8F4;
+  border-color: #CFE2D4;
+}
+
+.status-fail {
+  background-color: #FFF7F6;
+  border-color: #F0CECB;
+}
+
+.status-info {
+  background-color: #FAF8F3;
+  border-color: #E6E0D4;
+}
+
+.status-pass .status-item-icon { color: var(--bg-forest); }
+.status-fail .status-item-icon { color: #BA4438; }
+.status-info .status-item-icon { color: #6E7E73; }
+
+.status-item-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.status-item-text strong {
+  font-size: 0.9rem;
+  color: var(--text-primary);
+}
+
+.status-item-text span {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+.preflight-error-callout {
+  background-color: #FFF5F4;
+  border: 1px solid #EACAC7;
+  border-left: 4px solid #BA4438;
+  border-radius: var(--radius-sm);
+  padding: 0.85rem 1rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  font-size: 0.85rem;
+  color: #8C281F;
+}
+
+.preflight-error-callout strong {
+  display: block;
+  font-weight: 700;
+  margin-bottom: 0.15rem;
+}
+
+.preflight-error-callout p {
+  margin: 0;
+  line-height: 1.4;
+}
+
+.preflight-action-buttons {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  flex-wrap: wrap;
+  margin-top: 0.5rem;
+}
+
+/* Chamber Presence & PiP */
+.chamber-top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+}
+
+.chamber-meta-group {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+}
+
+.chamber-round-pill {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: var(--text-inverse);
+  background-color: var(--bg-forest);
+  padding: 0.35rem 0.85rem;
+  border-radius: var(--radius-full);
+}
+
+.chamber-role-badge,
+.chamber-resume-badge {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #485A4E;
+  background-color: #EAE5DC;
+  padding: 0.3rem 0.75rem;
+  border-radius: var(--radius-sm);
+}
+
+.chamber-presence-box {
+  position: relative;
+  width: 140px;
+  height: 80px;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1.5px solid #CFE2D4;
+  background-color: #1A261F;
+}
+
+.chamber-pip-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scaleX(-1);
+}
+
+.pip-indicator {
+  position: absolute;
+  bottom: 4px;
+  right: 6px;
+  background: rgba(18, 28, 22, 0.85);
+  backdrop-filter: blur(4px);
+  color: #FFFFFF;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 0.15rem 0.45rem;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+@media (max-width: 820px) {
+  .preflight-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ==========================================================================
+   AI INTERVIEW 2.0 — PHASE II VOICE & TTS STYLES
+   ========================================================================== */
+
+.question-actions-group {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.btn-tts-replay {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background-color: #F0EDE4;
+  border: 1px solid #D5CEBF;
+  color: var(--text-primary);
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 0.25rem 0.65rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-tts-replay:hover {
+  background-color: #E2DDD0;
+  border-color: var(--bg-forest);
+  color: var(--bg-forest);
+}
+
+.btn-tts-replay.speaking-active {
+  background-color: #EBF3ED;
+  border-color: var(--bg-forest);
+  color: var(--bg-forest);
+  box-shadow: 0 0 0 1px var(--bg-forest);
+}
+
+.icon-speaking {
+  color: #BA4438;
+}
+
+/* Candidate Response Mode Selector */
+.response-mode-selector {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  background-color: #ECE7DC;
+  padding: 0.25rem;
+  border-radius: var(--radius-md);
+}
+
+.mode-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: transparent;
+  border: none;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  padding: 0.4rem 0.85rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.mode-tab-btn:hover {
+  color: var(--text-primary);
+}
+
+.mode-tab-btn.active-mode {
+  background-color: #FFFFFF;
+  color: var(--bg-forest);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+}
+
+/* Voice Input Action Panel */
+.voice-input-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  margin-bottom: 0.85rem;
+}
+
+.voice-controls-bar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  background-color: #F8F6F0;
+  border: 1px solid #E2DCD0;
+  border-radius: var(--radius-md);
+  padding: 0.85rem 1.15rem;
+}
+
+.btn-mic-record {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: var(--bg-forest);
+  color: var(--text-inverse);
+  border: none;
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 0.55rem 1.15rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-mic-record:hover {
+  background-color: #1A382A;
+  transform: translateY(-1px);
+}
+
+.btn-mic-record.recording-pulse {
+  background-color: #C0392B;
+  animation: recordingPulse 1.5s infinite;
+}
+
+@keyframes recordingPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(192, 57, 43, 0.6);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(192, 57, 43, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(192, 57, 43, 0);
+  }
+}
+
+.icon-mic-idle {
+  color: var(--text-inverse);
+}
+
+.icon-mic-stop {
+  color: #FFFFFF;
+}
+
+.voice-guidance-note {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  flex: 1;
+  line-height: 1.4;
+}
+
+.voice-fallback-notice {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background-color: #FBF8F2;
+  border: 1px solid #E6DFC8;
+  border-radius: var(--radius-sm);
+  padding: 0.65rem 1rem;
+  font-size: 0.84rem;
+  color: #6E5A2A;
+}
+
+.response-textarea-wrap {
+  width: 100%;
+}
+
+/* ==========================================================================
+   AI INTERVIEW 2.0 — CHAMBER WORKSPACE POLISH
+   ========================================================================== */
+
+.interview-chamber-wrapper {
+  max-width: 980px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0.5rem 0 3rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  box-sizing: border-box;
+}
+
+/* Interviewer Question Card (Prominent Header Prompt) */
+.interviewer-question-card {
+  background-color: #FFFFFF;
+  border: 1.5px solid #D5CEBF;
+  border-radius: var(--radius-xl);
+  padding: 2rem 2.25rem;
+  box-shadow: 0 6px 24px rgba(23, 32, 25, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
+}
+
+.question-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.interviewer-avatar-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--bg-forest);
+  background-color: #EBF3ED;
+  border: 1px solid #CFE2D4;
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--radius-full);
+}
+
+.question-type-badge {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #728477;
+  background-color: #F2EFE8;
+  padding: 0.25rem 0.65rem;
+  border-radius: var(--radius-sm);
+}
+
+.interview-question-text {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.45;
+  letter-spacing: -0.015em;
+  margin: 0;
+}
+
+/* Previous Evaluation Feedback (Rounds 2-5) */
+.previous-eval-card {
+  background-color: #F4F8F5;
+  border: 1.5px solid #CFE2D4;
+  border-left: 4px solid var(--bg-forest);
+  border-radius: var(--radius-lg);
+  padding: 1.15rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.eval-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.eval-header-title {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--bg-forest);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.eval-score-tag {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #385E48;
+  background-color: #E1EDE4;
+  padding: 0.2rem 0.65rem;
+  border-radius: var(--radius-full);
+}
+
+.eval-assessment-text {
+  font-size: 0.92rem;
+  color: var(--text-primary);
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Candidate Response Workspace Card */
+.interview-response-card {
+  background-color: #FFFFFF;
+  border: 1px solid #D8D2C4;
+  border-radius: var(--radius-xl);
+  padding: 2rem 2.25rem;
+  box-shadow: 0 4px 20px rgba(23, 32, 25, 0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  box-sizing: border-box;
+}
+
+.response-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #ECE7DD;
+}
+
+.response-hint {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.interview-response-textarea {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 190px;
+  background-color: #FAF8F4;
+  border: 1.5px solid #D5CEBF;
+  border-radius: var(--radius-lg);
+  padding: 1.25rem 1.4rem;
+  font-family: var(--font-body);
+  font-size: 1.02rem;
+  color: var(--text-primary);
+  line-height: 1.65;
+  resize: vertical;
+  transition: all var(--transition-fast);
+}
+
+.interview-response-textarea:focus {
+  background-color: #FFFFFF;
+  border-color: var(--bg-forest);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(35, 76, 56, 0.08);
+}
+
+.interview-response-textarea::placeholder {
+  color: #8C998F;
+  font-style: normal;
+  line-height: 1.55;
+}
+
+.response-action-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding-top: 0.85rem;
+  border-top: 1px solid #ECE7DD;
+}
+
+.btn-submit-response {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.85rem 1.85rem;
+  font-size: 0.98rem;
+  font-weight: 700;
+  font-family: var(--font-display);
+  border-radius: var(--radius-md);
+  box-shadow: 0 4px 14px rgba(35, 76, 56, 0.2);
+  transition: all var(--transition-fast);
+}
+
+.btn-submit-response:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(35, 76, 56, 0.28);
+}
+
+@media (max-width: 768px) {
+  .interviewer-question-card,
+  .interview-response-card {
+    padding: 1.35rem 1.25rem;
+  }
+  
+  .interview-question-text {
+    font-size: 1.15rem;
+  }
+  
+  .interview-response-textarea {
+    font-size: 0.95rem;
+    padding: 1rem;
+    min-height: 150px;
+  }
+}
+
+
+
 
 
 

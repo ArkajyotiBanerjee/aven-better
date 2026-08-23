@@ -20,6 +20,7 @@ from app.models.interview import (
     ConversationTurn,
 )
 from app.services.db_service import DatabaseService
+from app.services.resume_service import ResumeService
 
 # Resilient fallback questions in case of external API rate limits
 FALLBACK_QUESTIONS = {
@@ -135,10 +136,46 @@ class InterviewService:
             detail=f"Failed to communicate with Groq AI model: {last_error}"
         )
 
+    def extract_resume_interview_context(self, pdf_bytes: bytes, targeted_role: Optional[str] = None) -> str:
+        resume_svc = ResumeService.get_instance()
+        raw_text = resume_svc.extract_text_from_pdf(pdf_bytes)
+
+        system_prompt = (
+            "You are an expert technical interviewer preparing a concise, high-signal technical candidate profile from a resume. "
+            "Extract ONLY factual information present in the resume. "
+            "Do NOT invent projects, metrics, or technologies. "
+            "Keep the brief compact (under 350 words), focusing on: "
+            "1. Primary technical skills & languages\n"
+            "2. Core projects (architectures, key libraries, scale/metrics)\n"
+            "3. Work experience & responsibilities\n"
+            "4. Discussable technical claims that can be probed in an interview."
+        )
+
+        role_str = f"Target Role: {targeted_role}\n" if targeted_role else ""
+        user_prompt = (
+            f"{role_str}"
+            "Extract the concise technical interview profile from the following resume text:\n\n"
+            f"\"\"\"\n{raw_text[:10000]}\n\"\"\"\n\n"
+            "Return JSON matching: {\"interview_context\": \"string with formatted summary\"}"
+        )
+
+        try:
+            parsed = self._call_groq_json(system_prompt, user_prompt)
+            context = parsed.get("interview_context", "")
+            if context and len(context.strip()) > 30:
+                return context.strip()
+        except Exception as e:
+            print(f"Notice: Using raw resume text excerpt for context due to: {e}")
+
+        # Fallback to a clean text excerpt
+        return raw_text[:2500].strip()
+
     def start_interview(self, req: StartInterviewRequest) -> StartInterviewResponse:
         session_id = f"int_{uuid.uuid4().hex[:12]}"
         topic = req.topic.strip()
         difficulty = req.difficulty.strip()
+        targeted_role = req.targeted_role.strip() if req.targeted_role else None
+        resume_context = req.resume_context.strip() if req.resume_context else None
 
         system_prompt = (
             "You are a rigorous, highly skilled technical interviewer conducting a structured 5-round technical interview. "
@@ -146,10 +183,26 @@ class InterviewService:
             "Generate ONLY valid JSON."
         )
 
+        context_instructions = ""
+        if targeted_role:
+            context_instructions += f"Targeted Career Direction: {targeted_role}\n"
+        if resume_context:
+            context_instructions += f"Candidate Resume Technical Profile & Project Evidence:\n\"\"\"\n{resume_context}\n\"\"\"\n"
+
+        if context_instructions:
+            guidance = (
+                f"{context_instructions}\n"
+                "Ground the initial Round 1 inquiry in the candidate's actual projects, technologies, or domain experience where relevant. "
+                "You may ask them to walk through an architectural trade-off from a project mentioned on their resume, or ask a role-specific conceptual inquiry."
+            )
+        else:
+            guidance = "Generate a technical question for this topic and difficulty."
+
         user_prompt = (
             f"Generate the initial technical question (Round 1 of 5) for a candidate.\n"
             f"Topic: {topic}\n"
-            f"Difficulty: {difficulty}\n\n"
+            f"Difficulty: {difficulty}\n"
+            f"{guidance}\n\n"
             "Requirements:\n"
             "- The question must test foundational understanding or real-world technical mechanics.\n"
             "- Keep the question concise and direct (1 to 3 sentences).\n"
@@ -186,6 +239,7 @@ class InterviewService:
             topic=topic,
             difficulty=difficulty,
             initial_question=initial_q,
+            targeted_role=targeted_role,
         )
 
     def evaluate_and_next(self, req: SubmitAnswerRequest, user_id: Optional[str] = None) -> SubmitAnswerResponse:
@@ -196,6 +250,8 @@ class InterviewService:
         question_text = req.question_text
         answer_text = req.answer_text.strip()
         history = req.history
+        targeted_role = req.targeted_role
+        resume_context = req.resume_context
 
         is_final_round = (current_round >= 5)
 
@@ -210,11 +266,22 @@ class InterviewService:
             )
         history_str = "\n\n".join(history_summary) if history_summary else "None (Round 1)"
 
+        resume_info = ""
+        if targeted_role:
+            resume_info += f"Candidate Target Role: {targeted_role}\n"
+        if resume_context:
+            resume_info += f"Candidate Resume Evidence:\n\"\"\"\n{resume_context}\n\"\"\"\n"
+
         system_prompt = (
             "You are an expert technical interviewer conducting an adaptive 5-round technical interview. "
             "You evaluate responses strictly based on technical correctness, conceptual depth, clarity of communication, and systematic reasoning. "
             "You adapt the next question based on how well the candidate answered: "
-            "if strong, push for edge cases/trade-offs; if partially correct, probe the missed nuance; if weak, ask a clarifying fundamental. "
+            "if strong, push for edge cases/trade-offs; if partially correct, probe the missed nuance; if weak, ask a clarifying fundamental.\n\n"
+            "ASR-AWARE ROBUSTNESS INSTRUCTIONS:\n"
+            "- The candidate's submitted answer may be transcribed from voice speech recognition (ASR).\n"
+            "- If a word or phrase is an obvious phonetic transcription distortion of a technical term (e.g. 'hash mark' for 'hash map', 'sequel' for 'SQL', 'sink await' for 'async/await', 'node j s' for 'Node.js', 'carrying' for 'currying', 'byte code' for 'bytecode'), interpret the likely intended technical term in the context of the question, target role, and resume.\n"
+            "- Do NOT penalize minor phonetic transcription inaccuracies on correctness or clarity.\n"
+            "- Do NOT hallucinate or invent technical facts: if the candidate's explanation is genuinely shallow, vague, or conceptually incorrect, evaluate it accurately as shallow or incomplete.\n"
             "Always return ONLY valid JSON."
         )
 
@@ -222,12 +289,13 @@ class InterviewService:
             user_prompt = (
                 f"Topic: {topic}\n"
                 f"Difficulty: {difficulty}\n"
+                f"{resume_info}"
                 f"Current Round: {current_round} of 5\n\n"
                 f"Prior Interview Context:\n{history_str}\n\n"
                 f"Current Question:\n{question_text}\n\n"
                 f"Candidate's Submitted Answer:\n{answer_text}\n\n"
                 "Task:\n"
-                "1. Evaluate this specific answer on correctness, depth, clarity, and reasoning (scores 0-100).\n"
+                "1. Evaluate this specific answer on correctness, depth, clarity, and reasoning (scores 0-100), applying ASR-aware interpretation for phonetic distortions.\n"
                 "2. Provide a constructive, concise 2-sentence assessment of the response.\n"
                 "3. List 1-2 bullet strengths and 1-2 bullet gaps/missed nuances.\n"
                 f"4. Formulate the NEXT question (Round {current_round + 1} of 5) that adaptively responds to the candidate's understanding.\n\n"
@@ -250,12 +318,13 @@ class InterviewService:
             user_prompt = (
                 f"Topic: {topic}\n"
                 f"Difficulty: {difficulty}\n"
+                f"{resume_info}"
                 f"Current Round: 5 of 5 (FINAL ROUND)\n\n"
                 f"Full Interview Transcript:\n{history_str}\n\n"
                 f"Final Question:\n{question_text}\n\n"
                 f"Candidate's Final Answer:\n{answer_text}\n\n"
                 "Task:\n"
-                "1. Evaluate this final answer on correctness, depth, clarity, and reasoning (scores 0-100).\n"
+                "1. Evaluate this final answer on correctness, depth, clarity, and reasoning (scores 0-100), applying ASR-aware interpretation for phonetic distortions.\n"
                 "2. Synthesize a comprehensive FINAL INTERVIEW EVALUATION REPORT covering all 5 rounds:\n"
                 "   - overall_score (0-100)\n"
                 "   - technical_understanding (0-100)\n"

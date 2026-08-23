@@ -11,6 +11,11 @@ import {
   Scale,
   Lightbulb
 } from 'lucide-react';
+import { 
+  speakText as sharedSpeakText, 
+  cancelSpeech, 
+  isSpeechSynthesisSupported 
+} from '../utils/speechSynthesis';
 
 /**
  * Builds step-by-step chunked learning cards dynamically from StructuredLecture.
@@ -246,21 +251,17 @@ export default function LearningSupportPanel({
   // Stop speech when step changes or component unmounts
   useEffect(() => {
     return () => {
-      if (window.speechSynthesis) {
-        window.speechSynthesis.cancel();
-      }
+      cancelSpeech();
     };
   }, []);
 
   const handleStopSpeech = () => {
-    if (window.speechSynthesis) {
-      window.speechSynthesis.cancel();
-    }
+    cancelSpeech();
     setIsSpeaking(false);
   };
 
   const handleReadAloud = (text) => {
-    if (!window.speechSynthesis) {
+    if (!isSpeechSynthesisSupported()) {
       alert("Speech synthesis is not supported in this browser.");
       return;
     }
@@ -270,18 +271,15 @@ export default function LearningSupportPanel({
       return;
     }
 
-    window.speechSynthesis.cancel();
-
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.rate = 0.95; // Clear pacing for learning support
-    utterance.pitch = 1.0;
-    utterance.lang = 'en-US';
-
-    utterance.onend = () => setIsSpeaking(false);
-    utterance.onerror = () => setIsSpeaking(false);
-
     setIsSpeaking(true);
-    window.speechSynthesis.speak(utterance);
+
+    sharedSpeakText(text, {
+      rate: 0.95, // Clear pacing for learning support
+      pitch: 1.0,
+      lang: 'en-US',
+      onEnd: () => setIsSpeaking(false),
+      onError: () => setIsSpeaking(false),
+    });
   };
 
   const handleGoToStep = (index, forcedDirection = null) => {

@@ -9,6 +9,14 @@ class InterviewTopicOption(BaseModel):
 class StartInterviewRequest(BaseModel):
     topic: str = Field(default="Data Structures & Algorithms", description="Selected technical topic")
     difficulty: str = Field(default="Intermediate", description="Selected difficulty: Foundational, Intermediate, Advanced")
+    targeted_role: Optional[str] = Field(default=None, description="Optional targeted career role, e.g. Software Development Engineer")
+    resume_context: Optional[str] = Field(default=None, description="Extracted technical summary / project evidence from candidate resume")
+
+class ExtractResumeContextResponse(BaseModel):
+    filename: str
+    resume_context: str
+    targeted_role: Optional[str] = None
+    character_count: int
 
 class InterviewQuestion(BaseModel):
     question_id: str = Field(description="Unique question identifier")
@@ -24,6 +32,7 @@ class StartInterviewResponse(BaseModel):
     topic: str
     difficulty: str
     initial_question: InterviewQuestion
+    targeted_role: Optional[str] = None
 
 class InterviewRoundEvaluation(BaseModel):
     correctness: float = Field(ge=0, le=100, description="Correctness score percentage")
@@ -50,6 +59,8 @@ class SubmitAnswerRequest(BaseModel):
     question_text: str
     answer_text: str
     history: List[ConversationTurn] = Field(default_factory=list, description="Previous completed rounds")
+    targeted_role: Optional[str] = Field(default=None, description="Optional targeted career role")
+    resume_context: Optional[str] = Field(default=None, description="Optional extracted resume context")
 
 class FinalInterviewReport(BaseModel):
     overall_score: float = Field(ge=0, le=100, description="Overall interview readiness percentage")

@@ -12,6 +12,13 @@ import {
   Headphones,
   Sparkles
 } from 'lucide-react';
+import { 
+  speakText as sharedSpeakText, 
+  pauseSpeech, 
+  resumeSpeech, 
+  cancelSpeech, 
+  isSpeechSynthesisSupported 
+} from '../utils/speechSynthesis';
 
 const API_BASE_URL = '';
 
@@ -170,41 +177,36 @@ export default function BlindModePanel({
   // Clean up speech synthesis on component unmount
   useEffect(() => {
     return () => {
-      if (window.speechSynthesis) {
-        window.speechSynthesis.cancel();
-      }
+      cancelSpeech();
     };
   }, []);
 
   const speakText = (text, onEndCallback = null) => {
-    if (!window.speechSynthesis) {
+    if (!isSpeechSynthesisSupported()) {
       alert("Browser Speech Synthesis is not supported in this browser.");
       return;
     }
 
-    window.speechSynthesis.cancel(); // Stop any ongoing speech
-
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.rate = 1.0;
-    utterance.pitch = 1.0;
-    utterance.lang = 'en-US';
-
-    utterance.onend = () => {
-      setIsPlaying(false);
-      setIsPaused(false);
-      if (onEndCallback) onEndCallback();
-    };
-
-    utterance.onerror = (e) => {
-      console.warn("SpeechSynthesis error:", e);
-      setIsPlaying(false);
-      setIsPaused(false);
-    };
-
-    utteranceRef.current = utterance;
     setIsPlaying(true);
     setIsPaused(false);
-    window.speechSynthesis.speak(utterance);
+
+    const utterance = sharedSpeakText(text, {
+      rate: 1.0,
+      pitch: 1.0,
+      lang: 'en-US',
+      onEnd: () => {
+        setIsPlaying(false);
+        setIsPaused(false);
+        if (onEndCallback) onEndCallback();
+      },
+      onError: (e) => {
+        console.warn("SpeechSynthesis error:", e);
+        setIsPlaying(false);
+        setIsPaused(false);
+      }
+    });
+
+    utteranceRef.current = utterance;
   };
 
   // Play a specific section
@@ -226,8 +228,8 @@ export default function BlindModePanel({
 
   // Play / Pause / Resume / Stop full lesson
   const handlePlayFullLesson = () => {
-    if (isPaused && window.speechSynthesis) {
-      window.speechSynthesis.resume();
+    if (isPaused && isSpeechSynthesisSupported()) {
+      resumeSpeech();
       setIsPaused(false);
       setIsPlaying(true);
     } else {
@@ -237,17 +239,15 @@ export default function BlindModePanel({
   };
 
   const handlePause = () => {
-    if (window.speechSynthesis && isPlaying) {
-      window.speechSynthesis.pause();
+    if (isSpeechSynthesisSupported() && isPlaying) {
+      pauseSpeech();
       setIsPaused(true);
       setIsPlaying(false);
     }
   };
 
   const handleStop = () => {
-    if (window.speechSynthesis) {
-      window.speechSynthesis.cancel();
-    }
+    cancelSpeech();
     setIsPlaying(false);
     setIsPaused(false);
   };
